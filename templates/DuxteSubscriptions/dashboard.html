@@ -1,0 +1,58 @@
+{% extends "main.html" %}
+
+{% block extend_head %}
+<title>Duxte|Dashboard</title>
+{% endblock %}
+
+{% block content %}
+
+<section class="ftco-section">
+  <div class="container">
+    <h4>Dashboard</h4>
+    <div class="row">
+      <div class="col-md-3">
+        <div class="dashboard-box follow-up-customers" onclick="window.location.href='{% url 'follow_up_customers' %}'">
+          Follow-Up Customers <br>
+          <span class="count" data-count="{{ follow_up_count }}">0</span>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="dashboard-box active-customers" onclick="window.location.href='{% url 'active_customers' %}'">
+          Active Customers <br>
+          <span class="count" data-count="{{ active_count }}">0</span>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="dashboard-box valid-customers" onclick="window.location.href='{% url 'valid_customers' %}'">
+          Valid Customers <br>
+          <span class="count" data-count="{{ valid_count }}">0</span>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="dashboard-box expired-customers" onclick="window.location.href='{% url 'expired_customers' %}'">
+          Expired Customers <br>
+          <span class="count" data-count="{{ expired_count }}">0</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<script> // Data Count Animation
+  const counters = document.querySelectorAll('.count');
+  counters.forEach(counter => {
+    const updateCount = () => {
+      const target = +counter.getAttribute('data-count');
+      const count = +counter.innerText;
+
+      if (count < target) {
+        counter.innerText = count + Math.ceil(target / 100);
+        setTimeout(updateCount, 10);
+      } else {
+        counter.innerText = target;
+      }
+    };
+
+    updateCount();
+  });
+</script>
+{% endblock %}

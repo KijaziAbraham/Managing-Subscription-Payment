@@ -1,0 +1,67 @@
+{% extends "base_auth.html" %}
+{% load static %}
+
+{% block extend_head %}
+  <title>Duxte|Login</title>
+{% endblock %}
+
+
+{% block content %}
+<style>
+  .btn-primary-custom {
+    display: inline-block;
+    font-weight: 400;
+    color: #fff;
+    text-align: center;
+    vertical-align: middle;
+    cursor: pointer;
+    background-color: #31B136;
+    border: 1px solid #31B136;
+    padding: 0.45rem 1.15rem;
+    font-size: 1rem;
+    line-height: 1.5;
+    text-decoration: none;
+    border-radius: 0.5rem;
+    transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  }
+  
+  .btn-primary-custom:hover {
+    background-color: #249c1f;
+    border-color: #249c1f;
+    color: white;
+  
+  }
+  .btn-primary-custom i {
+    margin-right: 8px;
+  }
+</style>
+<section class="ftco-section">
+  <div class="container">
+    <!-- Logo Image -->
+    <div class="text-center mb-4">
+      <img src="{% static 'img/logo.png' %}" alt="Company Logo" style="max-width: 200px;">
+    </div>
+    <form method="post" action="{% url 'login' %}">
+      {% csrf_token %}
+      <div class="row">
+        <div class="col">
+          <div class="input-group2 input-group-icon">
+            <input type="text" name="username" placeholder="Username" required>
+            <div class="input-icon"><i class="fa fa-user"></i></div>
+          </div>
+          <div class="input-group2 input-group-icon">
+            <input type="password" name="password" placeholder="Password" required>
+            <div class="input-icon"><i class="fa fa-key"></i></div>
+          </div>
+          <div class="text-left">
+            <button class="btn btn-primary-custom text-start" type="submit" style="width: auto;">Login</button>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</section>
+{% endblock %}
+
+{% block extend_footer %}
+{% endblock %}

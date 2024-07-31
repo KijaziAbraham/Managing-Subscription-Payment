@@ -1,0 +1,61 @@
+{% extends "main.html" %}
+
+{% block extend_head %}
+<title>Duxte|Software List</title>{% endblock %}
+
+{% block content %}
+<style>
+  .btn-primary-custom2 {
+    position: relative;
+    display: inline-block;
+    font-weight: 400;
+    color: #fff;
+    box-sizing: border-box;
+    text-align: center;
+    vertical-align: middle;
+    cursor: pointer;
+    background-color:  #f0a500; 
+    border: 1px solid  #f0a500; 
+    padding: .5em 1em;
+    font-size: .88em;
+    color: black;
+    line-height: 1.5;
+    text-decoration: none; /* Ensures no text decoration */
+    border-radius: 0.25rem;
+    transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  }
+  .btn-primary-custom2:hover {
+    background-color: #d18b00; 
+    border-color: rgba(0, 0, 0, 0.5); 
+  }
+</style>
+
+<section class="container-fluid mt-5">
+  <h4 class="mb-4">Software List</h4>
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Category</th>
+        <th>Type</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for software in software_list %}
+      <tr>
+        <td>{{ software.name }}</td>
+        <td>{{ software.get_category_display }}</td>
+        <td>{{ software.get_type_display }}</td>
+        <td>
+          <a href="{% url 'edit_software' software.pk %}" class="btn btn-primary-custom2">Edit</a>
+
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+</section>
+
+{% endblock %}

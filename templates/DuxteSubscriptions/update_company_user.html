@@ -1,0 +1,69 @@
+{% extends "main.html" %}
+
+{% block extend_head %}
+<title>Duxte|Update Company User</title>
+{% endblock %}
+
+{% block content %}
+<style>
+  .btn-primary-custom {
+    position: relative;
+    display: inline-block;
+    font-weight: 400;
+    box-sizing: border-box;
+    text-align: center;
+    vertical-align: middle;
+    cursor: pointer;
+    background-color: #31B136;
+    border: 1px solid #31B136;
+    padding: .5em 1em;
+    font-size: .88em;
+    color: black;
+    line-height: 1.5;
+    text-decoration: none;
+    border-radius: 0.25rem;
+    transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  }
+  .btn-primary-custom:hover {
+    background-color: #28a745;
+    border-color: rgba(0, 0, 0, 0.5);
+  }
+
+  .btn-secondary-custom {
+    position: relative;
+    display: inline-block;
+    font-weight: 400;
+    box-sizing: border-box;
+    text-align: center;
+    vertical-align: middle;
+    cursor: pointer;
+    background-color: #dc3545;
+    border: 1px solid #dc3545;
+    padding: .5em 1em;
+    font-size: .88em;
+    color: black;
+    line-height: 1.5;
+    text-decoration: none;
+    border-radius: 0.25rem;
+    transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  }
+  .btn-secondary-custom:hover {
+    background-color: #c82333;
+    border-color: rgba(0, 0, 0, 0.5);
+  }
+</style>
+
+<section class="ftco-section">
+  <div class="container">
+    <h4>Update Company User Details</h4>
+    <form method="post">
+      {% csrf_token %}
+      <div class="form-group">
+        {{ form.as_p }}
+      </div>
+      <button type="submit" class="btn btn-primary-custom">Save changes</button>
+      <a href="{% url 'company_user_detail' company_user.pk %}" class="btn btn-secondary-custom">Cancel</a>
+    </form>
+  </div>
+</section>
+{% endblock %}

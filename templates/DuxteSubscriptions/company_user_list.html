@@ -1,0 +1,159 @@
+{% extends "main.html" %}
+
+{% block extend_head %}
+<title>Duxte|Company User List</title>
+{% endblock %}
+
+{% block extend_header %}
+<style>
+  .btn-primary-custom2 {
+    position: relative;
+    display: inline-block;
+    font-weight: 400;
+    box-sizing: border-box;
+    text-align: center;
+    vertical-align: middle;
+    cursor: pointer;
+    background-color: #f0a500; 
+    border: 1px solid #f0a500; 
+    padding: .5em 1em;
+    font-size: .88em;
+    color: black;
+    line-height: 1.5;
+    text-decoration: none;
+    border-radius: 0.25rem;
+    transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  }
+  .btn-primary-custom2:hover {
+    background-color: #d18b00; 
+    border-color: rgba(0, 0, 0, 0.5); 
+  }
+
+  /*---------------------------------------------------------------------
+  Basic DataTables styling
+  ---------------------------------------------------------------------*/
+  .dataTables_wrapper .dataTables_paginate .paginate_button {
+    padding: 0.5em 1em;
+    margin: 0 0.1em;
+    border: 1px solid #dee2e6;
+    border-radius: 0.2rem;
+    background-color: #f8f9fa;
+    color: #007bff;
+    cursor: pointer;
+  }
+
+  .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+    background-color: #e9ecef;
+  }
+
+  .dataTables_wrapper .dataTables_paginate .paginate_button.current {
+    background-color: #007bff;
+    color: #fff;
+  }
+
+  .dataTables_wrapper .dataTables_length select {
+    padding: 0.5em;
+    border: 1px solid #ced4da;
+    border-radius: 0.2rem;
+    background-color: #fff;
+  }
+
+  .dataTables_wrapper .dataTables_filter input {
+    padding: 0.5em;
+    border: 1px solid #ced4da;
+    border-radius: 0.2rem;
+    background-color: #fff;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="ftco-section">
+  <div class="container-fluid mt-5">
+    <h4 class="mb-4">Company User List</h4>
+    <a href="{% url 'export_to_pdf' %}" class="btn btn-primary-custom2 mb-3">PDF</a>
+    <a href="{% url 'export_to_excel' %}" class="btn btn-primary-custom2 mb-3">Excel</a>
+    <table class="table table-borderless datatable">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Company</th>
+          <th>Email</th>
+          <th>Subscription Date</th>
+          <th>Subscription End</th>
+          <th>Subscription</th>
+          <th>Status</th>
+          <th>Details</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for company_user in company_users %}
+        <tr>
+          <td>{{ forloop.counter }}</td>
+          <td>{{ company_user.customer_name }}</td>
+          <td>{{ company_user.email1 }}</td>
+          <td>{{ company_user.date_of_subscription }}</td>
+          <td>{{ company_user.end_of_subscription }}</td>
+          <td>
+            {% if company_user.is_subscription_valid %}
+            <span class="badge bg-success">Valid</span>
+            {% else %}
+            <span class="badge bg-danger">Expired</span>
+            {% endif %}
+          </td>
+          <td>
+            <form method="post" action="{% url 'toggle_status' company_user.id %}" id="toggle-status-form-{{ company_user.id }}">
+              {% csrf_token %}
+              <button type="button" class="btn {% if company_user.is_active %}btn-toggle-active{% else %}btn-toggle-inactive{% endif %}" onclick="toggleActive({{ company_user.id }});">
+                {% if company_user.is_active %}Active{% else %}Inactive{% endif %}
+              </button>
+            </form>
+          </td>
+          <td>
+            <a href="{% url 'company_user_detail' company_user.id %}">
+              <i class="fa fa-eye"></i>
+            </a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<script>
+  // Toggle Active/Inactive Status
+  window.toggleActive = function(userId) {
+    var form = document.getElementById('toggle-status-form-' + userId);
+    var button = form.querySelector('button');
+    var isActive = button.classList.contains('btn-toggle-active');
+
+    // Change the button text and class based on the current state
+    button.classList.toggle('btn-toggle-active', !isActive);
+    button.classList.toggle('btn-toggle-inactive', isActive);
+    button.textContent = isActive ? 'Inactive' : 'Active';
+
+    // Optionally, you could submit the form here if needed
+    form.submit();
+  }
+
+  {% comment %} // Initialize DataTables
+  $(document).ready(function() {
+    $('.datatable').DataTable({
+      "pageLength": 10, // Default number of rows per page
+      "lengthMenu": [5, 10, 25, 50, 100], // Options for rows per page
+      "order": [[0, 'asc']], // Default sorting on the first column
+      "language": {
+        "search": "Search:", // Label for the search input
+        "lengthMenu": "Show _MENU_ entries", // Label for the page length menu
+        "info": "Showing _START_ to _END_ of _TOTAL_ entries", // Info text
+        "infoEmpty": "No entries available", // Info text when there are no entries
+        "infoFiltered": "(filtered from _MAX_ total entries)" // Info text for filtering
+      }
+    });
+  }); {% endcomment %}
+</script>
+{% endblock %}
+
+{% block extend_footer %}
+{% endblock %}

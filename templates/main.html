@@ -1,0 +1,281 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+  <meta content="" name="description">
+  <meta content="" name="keywords">
+
+  <!-- Favicons -->
+  <link href="{% static 'img/favicon.png' %}" rel="icon">
+  <link href="{% static 'img/apple-touch-icon.png' %}" rel="apple-touch-icon">
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.gstatic.com" rel="preconnect">
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Vendor CSS Files -->
+  <link href="{% static 'vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+  <link href="{% static 'vendor/bootstrap-icons/bootstrap-icons.css' %}" rel="stylesheet">
+  <link href="{% static 'vendor/boxicons/css/boxicons.min.css' %}" rel="stylesheet">
+  <link href="{% static 'vendor/quill/quill.snow.css' %}" rel="stylesheet">
+  <link href="{% static 'vendor/quill/quill.bubble.css' %}" rel="stylesheet">
+  <link href="{% static 'vendor/remixicon/remixicon.css' %}" rel="stylesheet">
+  <link href="{% static 'vendor/simple-datatables/style.css' %}" rel="stylesheet">
+
+  <!-- Template Main CSS File -->
+  <link href="{% static 'css/styles.css' %}" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.12.1/css/jquery.dataTables.min.css">
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.min.css">
+  <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+  <script src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
+  
+ 
+  {% block extend_head %}
+  {% endblock %}
+  
+</head>
+
+<body>
+  
+  <header id="header" class="header fixed-top d-flex align-items-center">
+    <div class="logo d-flex align-items-center">
+      <img src="{% static 'img/logo.png' %}" alt="Duxte Logo" style="height: 1.5em;" class="logo-img">
+    </div>
+
+    <div>
+      <i class="bi bi-list toggle-sidebar-btn"></i>
+    </div>
+
+    <nav class="header-nav ms-auto">
+      <ul class="d-flex align-items-center">
+        <!-- Notifications Dropdown -->
+        <li class="nav-item dropdown">
+          <a class="nav-link nav-icon" href="#" id="notificationsDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="bi bi-bell"></i>
+            <span class="badge bg-primary badge-number">{{ follow_up_count }}</span>
+          </a>
+          <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow notifications" aria-labelledby="notificationsDropdown">
+            <li class="dropdown-header">
+              You have {{ follow_up_count }} follow-ups
+              <a href="#"><span class="badge rounded-pill bg-primary p-2 ms-2">View all</span></a>
+            </li>
+            <li>
+              <hr class="dropdown-divider">
+            </li>
+            {% for user in follow_up_users %}
+            <li class="notification-item">
+              <i class="bi bi-exclamation-circle text-warning"></i>
+              <div>
+                <h4>{{ user.name }}</h4>
+                <p>{{ user.follow_up_message }}</p>
+                <p>{{ user.follow_up_time }}</p>
+              </div>
+            </li>
+            <li>
+              <hr class="dropdown-divider">
+            </li>
+            {% endfor %}
+            <li class="dropdown-footer">
+              <a href="#">Show all follow-ups</a>
+            </li>
+          </ul>
+        </li>
+    
+        <!-- Messages Dropdown -->
+        <li class="nav-item dropdown">
+          <a class="nav-link nav-icon" href="#" id="messagesDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="bi bi-chat-left-text"></i>
+            <span class="badge bg-success badge-number">{{ reminder_count }}</span>
+          </a>
+          <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow messages" aria-labelledby="messagesDropdown">
+            <li class="dropdown-header">
+              You have {{ reminder_count }} new messages
+              <a href="#"><span class="badge rounded-pill bg-primary p-2 ms-2">View all</span></a>
+            </li>
+            <li>
+              <hr class="dropdown-divider">
+            </li>
+            {% for reminder in reminders %}
+            <li class="message-item">
+              <a href="#">
+                <div>
+                  <h4>{{ reminder.user_name }}</h4>
+                  <p>{{ reminder.message }}</p>
+                  <p>{{ reminder.time }}</p>
+                </div>
+              </a>
+            </li>
+            <li>
+              <hr class="dropdown-divider">
+            </li>
+            {% endfor %}
+            <li class="dropdown-footer">
+              <a href="#">Show all messages</a>
+            </li>
+          </ul>
+        </li>
+    
+        
+    
+    <li class="nav-item">
+      <a class="nav-link" href="{% url 'logout' %}">
+        <i class="fa fa-sign-out"></i> Logout
+      </a>
+    </li>
+  </ul>
+</nav>
+    {% block extend_header %}
+    {% endblock %}
+</header>
+
+
+
+  <main id="main" class="main">
+    <section class="container-fluid mt-5">
+      <aside id="sidebar" class="sidebar">
+        <ul class="sidebar-nav" id="sidebar-nav">
+          <li class="nav-item">
+            <a class="nav-link collapsed" href="{% url 'dashboard' %}">
+              <i class="fa fa-tachometer-alt"></i><span>Dashboard</span>
+            </a>
+          </li>
+
+          <li class="nav-item">
+            <a class="nav-link collapsed" data-bs-target="#company-management" data-bs-toggle="collapse" href="#">
+              <i class="fa fa-building"></i><span>Company Management</span><i class="fa fa-chevron-down ms-auto"></i>
+            </a>
+            <ul id="company-management" class="nav-content collapse" data-bs-parent="#sidebar-nav">
+              <li>
+                <a href="{% url 'create_company_user' %}">
+                  <i class="fa fa-plus"></i><span>Add Company</span>
+                </a>
+              </li>
+              <li>
+                <a href="{% url 'company_user_list' %}">
+                  <i class="fa fa-list"></i><span>Company List</span>
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="nav-item">
+            <a class="nav-link collapsed" data-bs-target="#software-management" data-bs-toggle="collapse" href="#">
+              <i class="fa fa-cogs"></i><span>Software Management</span><i class="fa fa-chevron-down ms-auto"></i>
+            </a>
+            <ul id="software-management" class="nav-content collapse" data-bs-parent="#sidebar-nav">
+              <li>
+                <a href="{% url 'add_software' %}">
+                  <i class="fa fa-plus-circle"></i><span>Add Software</span>
+                </a>
+              </li>
+              <li>
+                <a href="{% url 'software_list' %}">
+                  <i class="fa fa-list"></i><span>Software List</span>
+                </a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </aside>
+
+      {% block content %}
+      {% endblock %}
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-bottom">
+      <div class="footer-item">
+        <div class="footer-content">
+          <span class="footer-text">English (TZ)</span>
+          <span class="footer-text">&copy; 2024 Duxte Ltd. All Rights Reserved.</span>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+
+  <!-- Vendor JS Files -->
+  <script src="{% static 'vendor/apexcharts/apexcharts.min.js' %}"></script>
+  <script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+  <script src="{% static 'vendor/chart.js/chart.umd.js' %}"></script>
+  <script src="{% static 'vendor/echarts/echarts.min.js' %}"></script>
+  <script src="{% static 'vendor/quill/quill.min.js' %}"></script>
+  <script src="{% static 'vendor/simple-datatables/simple-datatables.js' %}"></script>
+  <script src="{% static 'vendor/tinymce/tinymce.min.js' %}"></script>
+  <script src="{% static 'vendor/php-email-form/validate.js' %}"></script>
+
+  <!-- Template Main JS File -->
+  <script src="{% static 'js/scripts.js' %}"></script>
+
+  <script>
+    // Sidebar Toggle and Menu Item Collapse/Expand
+    document.addEventListener('DOMContentLoaded', function() {
+      const toggleSidebarBtn = document.querySelector('.toggle-sidebar-btn');
+      const sidebar = document.querySelector('.sidebar');
+      const mainContent = document.querySelector('#main');
+      const footer = document.querySelector('.footer');
+
+
+      toggleSidebarBtn.addEventListener('click', function() {
+        sidebar.classList.toggle('toggle-sidebar');
+        mainContent.classList.toggle('toggle-sidebar');
+        footer.classList.toggle('toggle-sidebar');
+
+
+      });
+
+      document.querySelectorAll('.nav-link[data-bs-toggle="collapse"]').forEach(function(element) {
+        element.addEventListener('click', function(e) {
+          e.preventDefault();
+          const target = document.querySelector(this.getAttribute('data-bs-target'));
+          const icon = this.querySelector('.fa-chevron-left');
+
+          if (target.classList.contains('show')) {
+            icon.style.transform = 'rotate(0deg)';
+          } else {
+            icon.style.transform = 'rotate(-90deg)';
+          }
+
+          target.classList.toggle('show');
+        });
+      });
+    });
+
+    $(document).ready(function() {
+      // Show notification dropdown and hide message dropdown
+      $('.nav-icon[data-bs-target="#notifications"]').on('click', function() {
+          $('#messages').hide(); // Hide message dropdown
+          $('#notifications').toggle(); // Toggle notification dropdown
+      });
+  
+      // Show message dropdown and hide notification dropdown
+      $('.nav-icon[data-bs-target="#messages"]').on('click', function() {
+          $('#notifications').hide(); // Hide notification dropdown
+          $('#messages').toggle(); // Toggle message dropdown
+      });
+  
+      // Hide dropdowns when clicking outside
+      $(document).click(function(event) {
+          if (!$(event.target).closest('.nav-icon, .dropdown-menu').length) {
+              $('.dropdown-menu').hide(); // Hide all dropdowns
+          }
+      });
+  });
+  
+  </script>
+  {% block extend_footer %}
+  {% endblock %}
+</body>
+
+</html>

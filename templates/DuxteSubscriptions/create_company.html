@@ -1,0 +1,166 @@
+{% extends "main.html" %}
+
+{% block extend_head %}
+<title>Duxte|Create Company User</title>
+{% endblock %}
+
+{% block extend_header %}
+<style>
+  .btn-primary-custom {
+    display: inline-block;
+    font-weight: 400;
+    color: #fff;
+    text-align: center;
+    vertical-align: middle;
+    cursor: pointer;
+    background-color: #31B136;
+    border: 1px solid #31B136;
+    padding: 0.45rem 1.15rem;
+    font-size: 1rem;
+    line-height: 1.5;
+    text-decoration: none;
+    border-radius: 0.5rem;
+    transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  }
+  
+  .btn-primary-custom:hover {
+    background-color: #249c1f;
+    border-color: #249c1f;
+    color: white;
+  }
+
+  .btn-primary-custom i {
+    margin-right: 8px;
+  }
+
+  .input-error {
+    border: 1px solid red;
+  }
+
+  .error-message {
+    color: red;
+    font-size: 0.875rem;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="ftco-section">
+  <div class="container">
+    <form method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+      <div class="row">
+        <h4>Create Company User</h4>
+        <div>
+          <div class="col-md-6 mb-3">
+            <div class="input-group2 input-group-icon">
+              <input type="text" name="{{ form.customer_name.name }}" id="{{ form.customer_name.id_for_label }}" placeholder="{{ form.customer_name.label }}" required class="{% if form.customer_name.errors %}input-error{% endif %}">
+              <div class="input-icon"><i class="fa fa-building"></i></div>
+            </div>
+            {% if form.customer_name.errors %}
+              <div class="error-message">{{ form.customer_name.errors }}</div>
+            {% endif %}
+          </div>
+
+          <div class="col">
+            <div class="input-group2 input-group-icon">
+              <input type="text" name="{{ form.contact.name }}" id="{{ form.contact.id_for_label }}" placeholder="Contact personal" required class="{% if form.contact.errors %}input-error{% endif %}">
+              <div class="input-icon"><i class="fa fa-user"></i></div>
+            </div>
+            {% if form.contact.errors %}
+              <div class="error-message">{{ form.contact.errors }}</div>
+            {% endif %}
+
+            <div class="input-group2 input-group-icon">
+              <input type="text" name="{{ form.phone_number.name }}" id="{{ form.phone_number.id_for_label }}" placeholder="{{ form.phone_number.label }}" required class="{% if form.phone_number.errors %}input-error{% endif %}">
+              <div class="input-icon"><i class="fa fa-phone"></i></div>
+            </div>
+            {% if form.phone_number.errors %}
+              <div class="error-message">{{ form.phone_number.errors }}</div>
+            {% endif %}
+        
+            <div class="input-group2 input-group-icon">
+              <input type="email" name="{{ form.email1.name }}" id="{{ form.email1.id_for_label }}" placeholder="{{ form.email1.label }}" required class="{% if form.email1.errors %}input-error{% endif %}">
+              <div class="input-icon"><i class="fa fa-envelope"></i></div>
+            </div>
+            {% if form.email1.errors %}
+              <div class="error-message">{{ form.email1.errors }}</div>
+            {% endif %}
+
+            <div class="input-group2 input-group-icon">
+              <input type="email" name="{{ form.email2.name }}" id="{{ form.email2.id_for_label }}" placeholder="{{ form.email2.label }}" class="{% if form.email2.errors %}input-error{% endif %}">
+              <div class="input-icon"><i class="fa fa-envelope"></i></div>
+            </div>
+            {% if form.email2.errors %}
+              <div class="error-message">{{ form.email2.errors }}</div>
+            {% endif %}
+
+            <div class="col-half">
+              <div class="input-group2 input-group-icon">
+                <select name="{{ form.software.name }}" id="{{ form.software.id_for_label }}" required class="{% if form.software.errors %}input-error{% endif %}">
+                  <option value="" disabled selected>Select software</option>
+                  {% for choice in form.software.field.choices %}
+                    <option value="{{ choice.0 }}" {% if form.software.value == choice.0 %}selected{% endif %}>{{ choice.1 }}</option>
+                  {% endfor %}
+                </select>
+                {% if form.software.errors %}
+                  <div class="error-message">{{ form.software.errors }}</div>
+                {% endif %}
+              </div>
+            </div>
+
+            <div class="col-half">
+              <div class="input-group2 input-group-icon">
+                <input type="text" class="date-placeholder {% if form.date_of_registration.errors %}input-error{% endif %}" placeholder="Select registration date" onfocus="(this.type='date')" name="{{ form.date_of_registration.name }}" id="{{ form.date_of_registration.id_for_label }}" required>
+                <div class="input-icon"><i class="fa fa-calendar"></i></div>
+              </div>
+              {% if form.date_of_registration.errors %}
+                <div class="error-message">{{ form.date_of_registration.errors }}</div>
+              {% endif %}
+            </div>
+
+            <div class="col-half">
+              <div class="input-group2 input-group-icon">
+                <input type="text" class="date-placeholder {% if form.date_of_subscription.errors %}input-error{% endif %}" placeholder="Select subscription date" onfocus="(this.type='date')" name="{{ form.date_of_subscription.name }}" id="{{ form.date_of_subscription.id_for_label }}" required>
+                <div class="input-icon"><i class="fa fa-calendar"></i></div>
+              </div>
+              {% if form.date_of_subscription.errors %}
+                <div class="error-message">{{ form.date_of_subscription.errors }}</div>
+              {% endif %}
+            </div>
+            
+            <div class="col-half">
+              <div class="input-group2 input-group-icon">
+                <input type="text" class="date-placeholder {% if form.end_of_subscription.errors %}input-error{% endif %}" placeholder="Select subscription end date" onfocus="(this.type='date')" name="{{ form.end_of_subscription.name }}" id="{{ form.end_of_subscription.id_for_label }}" required>
+                <div class="input-icon"><i class="fa fa-calendar"></i></div>
+              </div>
+              {% if form.end_of_subscription.errors %}
+                <div class="error-message">{{ form.end_of_subscription.errors }}</div>
+              {% endif %}
+            </div>
+            
+            <!-- JavaScript code to trigger SweetAlert -->
+<script>
+  {% if form.errors %}
+      {% for field in form %}
+          {% if field.errors %}
+              swal("Error", "{{ field.label }}: {{ field.errors|join:', ' }}", "error");
+          {% endif %}
+      {% endfor %}
+  {% endif %}
+</script>
+            <section>
+              <div class="text-left">
+                <button class="btn btn-primary-custom text-start" type="submit" style="width: auto;">Submit</button>
+              </div>
+            </section>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</section>
+{% endblock %}
+
+{% block extend_footer %}
+{% endblock %}

@@ -1,0 +1,89 @@
+{% extends "main.html" %}
+
+{% block extend_head %}
+<title>Duxte|Edit Software</title>
+{% endblock %}
+
+{% block extend_header %}
+<style>
+  .btn-primary-custom {
+    display: inline-block;
+    font-weight: 400;
+    color: #fff;
+    text-align: center;
+    vertical-align: middle;
+    cursor: pointer;
+    background-color: #31B136;
+    border: 1px solid #31B136;
+    padding: 0.45rem 1.15rem;
+    font-size: 1rem;
+    line-height: 1.5;
+    text-decoration: none;
+    border-radius: 0.5rem;
+    transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  }
+  
+  .btn-primary-custom:hover {
+    background-color: #249c1f;
+    border-color: #249c1f;
+    color: white;
+  
+  }
+  .btn-primary-custom i {
+    margin-right: 8px;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="ftco-section">
+  <div class="container">
+    <form method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+      <div class="row">
+        <h4>Edit Software</h4>
+
+        <div class="col">
+          <div class="input-group">
+            {{ form.name.label_tag }}
+            <div class="input-icon"><i class="fa fa-cogs"></i></div>
+            {{ form.name }}
+            {% if form.name.errors %}
+              <div class="error">{{ form.name.errors }}</div>
+            {% endif %}
+          </div>
+        </div>
+        
+        <div class="col">
+          <div class="input-group">
+            {{ form.category.label_tag }}
+            <div class="input-icon"><i class="fa fa-tags"></i></div>
+            {{ form.category }}
+            {% if form.category.errors %}
+              <div class="error">{{ form.category.errors }}</div>
+            {% endif %}
+          </div>
+        </div>
+        
+        <div class="col">
+          <div class="input-group">
+            {{ form.type.label_tag }}
+            <div class="input-icon"><i class="fa fa-cogs"></i></div>
+            {{ form.type }}
+            {% if form.type.errors %}
+              <div class="error">{{ form.type.errors }}</div>
+            {% endif %}
+          </div>
+        </div>
+        
+        <div class="text-left">
+            <button class="btn btn-primary-custom" type="submit">Save Changes</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</section>
+{% endblock %}
+
+{% block extend_footer %}
+{% endblock %}
