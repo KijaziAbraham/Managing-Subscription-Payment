@@ -63,8 +63,6 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'DuxteSubscriptions.context_processors.dashboard_context',  
-
             ],
         },
     },
@@ -108,10 +106,11 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-USE_TZ = True
-TIME_ZONE = 'Etc/GMT-3'
+TIME_ZONE = 'UTC'
+
 USE_I18N = True
 
+USE_TZ = True
 
 
 # Static files (CSS, JavaScript, Images)
@@ -135,15 +134,3 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',  
 ]
-
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'abrahamkijazi01@gmail.com'
-EMAIL_HOST_PASSWORD = 'ryub btal tnfd htqv'
-DEFAULT_FROM_EMAIL = 'abrahamkijazi01@gmail.com'
-
-
-
-

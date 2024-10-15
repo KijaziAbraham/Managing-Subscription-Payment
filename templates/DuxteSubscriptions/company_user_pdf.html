@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Company User List</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <h1>Company User List</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Company</th>
+                <th>Email</th>
+                <th>Subscription Date</th>
+                <th>Subscription End</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for company_user in company_users %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ company_user.customer_name }}</td>
+                <td>{{ company_user.email1 }}</td>
+                <td>{{ company_user.date_of_registration }}</td>
+                <td>{{ company_user.end_of_subscription }}</td>
+                <td>{{ company_user.is_subscription_valid }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>
