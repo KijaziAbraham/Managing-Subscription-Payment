@@ -6,7 +6,7 @@
   <meta charset="utf-8">
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
 
-  <title>{% block title %}Duxte System{% endblock %}</title>
+
   <meta content="" name="description">
   <meta content="" name="keywords">
 
@@ -29,109 +29,428 @@
 
   <!-- Template Main CSS File -->
   <link href="{% static 'css/styles.css' %}" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.12.1/css/jquery.dataTables.min.css">
 
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+
+<style>
+      .sidebar .nav-link.active {
+        background-color: #31B136;
+        color: white;
+      }
+      .sidebar .nav-content .nav-link.active {
+      background-color: #31B136 !important;
+      color: white !important;
+  }
+  .sidebar .nav-item .nav-content .nav-link.active {
+    background-color: #31B136;
+    color: white;
+  }
+      .sidebar .nav-content .nav-link.active {
+        background-color: #31B136;
+        color: white;
+    }
+    
+      .modal-content {
+          width: 80%;
+      }
+
+      .sidebar .nav-link {
+          color: #31B136;
+      }
+      .nav-link.collapsed .fa-chevron-down {
+          transition: transform 0.3s ease;
+      }
+      .nav-link:not(.collapsed) .fa-chevron-down {
+          transform: rotate(-180deg);
+      }
+
+      .small-header .containers {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0 20px;
+      }
+      
+      .breadcrumb {
+        background: none;
+        padding: 0;
+        margin-bottom: 0.1rem;
+        display: flex;
+        align-items: center;
+      }
+      
+      .breadcrumb-item + .breadcrumb-item::before {
+        content: "/";
+        color: #31B136;
+      }
+      
+      .breadcrumb-item a {
+        color: #31B136;
+        text-decoration: none;
+      }
+      
+      .breadcrumb-item.active {
+        color: #6c757d;
+      }
+      @media (max-width: 768px) {
+        .breadcrumb {
+          font-size: 12px;
+          flex-wrap: wrap;
+        }
+      }
+      
+    
+</style>
 
   {% block extend_head %}
   {% endblock %}
+
 </head>
 
 <body>
-   
-    <header id="header" class="header fixed-top d-flex align-items-center">
-        <div class="logo d-flex align-items-center">
-          <img src="{% static 'img/duxtelogo_1.webp' %}" alt="Duxte Logo" style="height: 1.5em;" class="logo-img">
-        </div>
-            
-    
+  <header id="header" class="header fixed-top d-flex align-items-center">
+    <div class="logo d-flex align-items-center">
+      <img src="{% static 'img/logo.png' %}" alt="Duxte Logo" style="height: 1.5em;" class="logo-img">
+    </div>
+
     <div>
       <i class="bi bi-list toggle-sidebar-btn"></i>
     </div>
-    
-    
+
     <nav class="header-nav ms-auto">
       <ul class="d-flex align-items-center">
-        <li class="nav-item d-block d-lg-none">
-          <a class="nav-link nav-icon search-bar-toggle" href="#">
-            <i class="fa fa-search"></i>
+        <!-- Logged in User Info -->
+
+        <!-- Notifications Modal Trigger -->
+        <li class="nav-item">
+          <a class="nav-link nav-icon" href="#" data-bs-toggle="modal" data-bs-target="#notificationsModal">
+            <i class="bi bi-bell"></i>
+            <span class="badge bg-primary badge-number">{{ follow_up_count }}</span>
+          </a>
+        </li>
+
+        <!-- Messages Modal Trigger -->
+        <li class="nav-item">
+          <a class="nav-link nav-icon" href="#" data-bs-toggle="modal" data-bs-target="#messagesModal">
+            <i class="bi bi-chat-left-text"></i>
+            <span class="badge bg-success badge-number">{{ reminder_count }}</span>
+          </a>
+        </li>
+
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'logout' %}">
+            <i class="fa fa-sign-out"></i> Logout
           </a>
         </li>
       </ul>
     </nav>
-
     {% block extend_header %}
     {% endblock %}
-    
-    <nav class="header-nav ms-auto">
-            <a class="nav-link" href="{% url 'logout' %}">
-                <i class="fa fa-sign-out"></i> Logout
-            </a>
-      </nav>
-</header>
+  </header>
 
-<main id="main" class="main">
-  
-  <section class="container-fluid mt-5">
-    <aside id="sidebar" class="sidebar">
-        <ul class="sidebar-nav" id="sidebar-nav">
-          <li class="nav-item">
-            <a class="nav-link collapsed" href="{% url 'company_user_list'%}">
-              <div class="input-icon"><i class="fa fa-building"></i></div>
-              <span>Company List</span>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link collapsed" href="{% url 'create_company_user'%}">
-              <div class="input-icon"><i class="fa fa-plus"></i></div>
-              <span>Add Company</span>
-            </a>
-          </li>
-        </ul>
-      </aside>
-      
-    {%  block content%}
-  {% endblock %}
-</main>
-
-<footer class="footer">
-
-  <div class="footer-bottom">
-      <div class="footer-item">
-          <div class="footer-content">
-              <span class="footer-text">English (TZ)</span>
-              <span class="footer-text">&copy; 2024 Duxte Ltd. All Rights Reserved.</span>
-          </div>
+  <header id="small-header" class="small-header">
+    <div class="containers d-flex justify-content-between align-items-center">
+      <div class="d-flex align-items-center">
+        <span>Logged in as: <span style="color: #31B136;">{{ user.username }}</span></span>
+        <span class="ms-5">
+          <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Home</a></li>
+            <li class="breadcrumb-item active" aria-current="page">
+              {% block page_title %}{{ title }}{% endblock %}
+            </li>
+          </ol>
+        </span>
       </div>
+      <span id="current-date"></span>
+    </div>
+  </header>
+  
+
+
+ 
+
+  <!-- Notifications Modal -->
+  <div class="modal fade" id="notificationsModal" tabindex="-1" aria-labelledby="notificationsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-sm">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="notificationsModalLabel">Notifications</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p>You have {{ follow_up_count}} follow-ups.</p>
+          <a href="{% url 'dashboard' %}" class="btn btn-primary">View all</a>
+        </div>
+      </div>
+    </div>
   </div>
-</footer>
 
+  <!-- Messages Modal -->
+  <div class="modal fade" id="messagesModal" tabindex="-1" aria-labelledby="messagesModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-sm">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="messagesModalLabel">Messages</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          {% if reminder_count > 0 %}
+            <p>{{ reminder_count }} reminder{% if reminder_count > 1 %}s{% endif %} {{ reminder_count|pluralize:"has,have" }} been scheduled for delivery today.</p>
+          {% else %}
+            <p>No reminders scheduled for today.</p>
+          {% endif %}
+        </div>        
 
+      </div>
+    </div>
+  </div>
 
+  <main id="main" class="main">
+    <section class="container-fluid mt-5">
+      <aside id="sidebar" class="sidebar">
+        <!-- Close button -->
+        <button id="close-sidebar" class="close-sidebar">
+            <i class="fa fa-times"></i>
+        </button>
+    
+        <ul class="sidebar-nav" id="sidebar-nav">
+            <li class="nav-item">
+                <a class="nav-link collapsed" href="{% url 'dashboard' %}">
+                    <i class="fa fa-tachometer-alt"></i><span>Dashboard</span>
+                </a>
+            </li>
+    
+            <li class="nav-item">
+                <a class="nav-link collapsed" data-bs-target="#company-management" data-bs-toggle="collapse" href="#">
+                    <i class="fa fa-building"></i><span>Company Management</span><i class="fa fa-chevron-down ms-auto"></i>
+                </a>
+                <ul id="company-management" class="nav-content collapse" data-bs-parent="#sidebar-nav">
+                    <li>
+                        <a href="{% url 'create_company_user' %}">
+                            <i class="fa fa-plus"></i><span>Add Company</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'company_user_list' %}">
+                            <i class="fa fa-list"></i><span>Company List</span>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+    
+            {% if user.is_superuser %}
+            <!-- Software Management Section -->
+            <li class="nav-item">
+                <a class="nav-link collapsed" data-bs-target="#software-management" data-bs-toggle="collapse" href="#">
+                    <i class="fa fa-cogs"></i><span>Software Management</span><i class="fa fa-chevron-down ms-auto"></i>
+                </a>
+                <ul id="software-management" class="nav-content collapse" data-bs-parent="#sidebar-nav">
+                    <li>
+                        <a href="{% url 'add_software' %}">
+                            <i class="fa fa-plus-circle"></i><span>Add Software</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'software_list' %}">
+                            <i class="fa fa-list"></i><span>Software List</span>
+                        </a>
+                    </li>
+
+               <!-- Add Addon Link -->
+              <li>
+                <a href="{% url 'create_addon' %}">
+                    <i class="fa fa-plug"></i><span>Add Addon</span>
+                </a>
+              </li>
+
+                    <!-- Add Category Link -->
+                    <li>
+                        <a href="{% url 'add_software_category' %}">
+                            <i class="fa fa-folder-plus"></i><span>Add Category</span>
+                        </a>
+                    </li>
+    
+                    <!-- Add Edition Link -->
+                    <li>
+                        <a href="{% url 'add_software_edition' %}">
+                            <i class="fa fa-layer-group"></i><span>Add Edition</span>
+                        </a>
+                    </li>
+    
+                    <!-- Add Version Link -->
+                    <li>
+                        <a href="{% url 'add_software_version' %}">
+                            <i class="fa fa-code-branch"></i><span>Add Version</span>
+                        </a>
+                    </li>
+                  
+                </ul>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link collapsed" href="{% url 'deleted_user_list' %}">
+                    <i class="fa fa-trash"></i><span>Deleted Customers</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link collapsed" href="{% url 'audit_log_list' %}">
+                    <i class="fa fa-history"></i><span>Audit Trail</span>
+                </a>
+            </li>
+            {% endif %}
+    
+            <li class="nav-item">
+                <a class="nav-link collapsed" href="{% url 'import_template_view' %}">
+                    <i class="fa fa-download"></i><span>Import</span>
+                </a>
+              </li>
+              
+            {% if user.is_superuser %}
+                <!-- Admin Panel Link for Superuser -->
+            <li class="nav-item">
+                <a class="nav-link collapsed" href="{% url 'admin:index' %}">
+                    <i class="fa fa-tools"></i><span>Admin Panel</span>
+                </a>
+            </li>
+            {% endif %}
+            <!-- Change Password Link -->
+            <li class="nav-item">
+                <a class="nav-link collapsed" href="{% url 'change_password' %}">
+                    <i class="fa fa-key"></i><span>Change Password</span>
+                </a>
+            </li>
+        </ul>
+    </aside>
+    
+        <div>
+          {% block content %}
+          {% endblock %}
+        </div>
+      </div>
+    </section>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+          const navLinks = document.querySelectorAll('.nav-link');
+          const currentURL = window.location.href;
+  
+          // Highlight active menu link and handle submenu expansion
+          navLinks.forEach(link => {
+              const linkHref = link.href;
+              if (currentURL.includes(linkHref)) {
+                  link.classList.add('active');
+                  const parentMenu = link.closest('.nav-content.collapse');
+                  if (parentMenu) {
+                      parentMenu.classList.add('show'); // Expand the parent menu
+                      const parentLink = parentMenu.previousElementSibling;
+                      if (parentLink) {
+                          parentLink.classList.remove('collapsed');
+                      }
+                  }
+              } else {
+                  link.classList.remove('active');
+              }
+          });
+  
+          // Keep Software Management and/or Company Management open if one of their links is active
+          const softwareManagementMenu = document.querySelector('#software-management');
+          const companyManagementMenu = document.querySelector('#company-management');
+  
+          const softwareLinks = softwareManagementMenu ? softwareManagementMenu.querySelectorAll('a') : [];
+          const companyLinks = companyManagementMenu ? companyManagementMenu.querySelectorAll('a') : [];
+  
+          // Expand Software Management menu if any of its links are active
+          let softwareManagementActive = false;
+          softwareLinks.forEach(link => {
+              if (currentURL.includes(link.href)) {
+                  softwareManagementMenu.classList.add('show');
+                  softwareManagementMenu.previousElementSibling.classList.remove('collapsed');
+                  softwareManagementActive = true;
+              }
+          });
+  
+          // Expand Company Management menu if any of its links are active
+          let companyManagementActive = false;
+          companyLinks.forEach(link => {
+              if (currentURL.includes(link.href)) {
+                  companyManagementMenu.classList.add('show');
+                  companyManagementMenu.previousElementSibling.classList.remove('collapsed');
+                  companyManagementActive = true;
+              }
+          });
+  
+          // Keep Company Management menu open even if Software Management is collapsed
+          if (!softwareManagementActive && companyManagementActive) {
+              companyManagementMenu.classList.add('show');
+              companyManagementMenu.previousElementSibling.classList.remove('collapsed');
+          }
+  
+          // Collapse and expand submenus on click
+          document.querySelectorAll('.nav-link.collapsed').forEach(item => {
+              item.addEventListener('click', function () {
+                  const targetCollapse = this.nextElementSibling;
+                  if (targetCollapse && targetCollapse.classList.contains('collapse')) {
+                      targetCollapse.classList.toggle('show');
+                      this.classList.toggle('collapsed');
+                  }
+              });
+          });
+      });
+  </script>
+  
+  
+  
+    
+ <script>
+   {% if messages %}
+       {% for message in messages %}
+           {% if message.tags == 'error' %}
+               swal("Error", "{{ message }}", "error");
+           {% elif message.tags == 'success' %}
+               swal("Success", "{{ message }}", "success");
+           {% endif %}
+       {% endfor %}
+   {% endif %}
+</script>
+
+  </main>
+
+  <footer class="footer">
+    <div class="footer-bottom">
+      <div class="footer-item">
+        <div class="footer-content">
+          <span class="footer-text">English (TZ)</span>
+          <span class="footer-text"> &copy; {{ current_year }} <strong><span>Duxte Limited</span></strong>. All Rights Reserved
+</span>
+          <div class="credits">
+            Developed and Maintained By <a href="#">Duxte</a>
+        </div>
+
+    </div>
+  </footer>
   <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
 
   <!-- Vendor JS Files -->
   <script src="{% static 'vendor/apexcharts/apexcharts.min.js' %}"></script>
-  <script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
   <script src="{% static 'vendor/chart.js/chart.umd.js' %}"></script>
   <script src="{% static 'vendor/echarts/echarts.min.js' %}"></script>
   <script src="{% static 'vendor/quill/quill.min.js' %}"></script>
   <script src="{% static 'vendor/simple-datatables/simple-datatables.js' %}"></script>
   <script src="{% static 'vendor/tinymce/tinymce.min.js' %}"></script>
   <script src="{% static 'vendor/php-email-form/validate.js' %}"></script>
-  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
-  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
-
+  <!-- Template Main JS File -->
   <script src="{% static 'js/scripts.js' %}"></script>
 
-{%block extend_footer%}
-{%endblock%}
-  
+  {% block extra_scripts %}
+  {% endblock %}
+
 </body>
 
 </html>

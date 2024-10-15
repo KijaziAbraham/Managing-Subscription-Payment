@@ -1,89 +1,326 @@
 {% extends "main.html" %}
+{% block page_title %}Create Company{% endblock %}
 
 {% block extend_head %}
-<title>Create Company User</title>
+<title>Duxte | Create Company User</title>
 {% endblock %}
-
 {% block extend_header %}
 <style>
-    .btn-primary-custom {
-        background-color: #31B136;
-        border-radius: 50px;
-        border: 1px solid #ebeef4;
-        color: white;
-        cursor: pointer;
-        display: inline-block;
-        padding: 10px 20px;
-        text-decoration: none;
-        transition: background-color 0.3s ease;
-        align-items: center;
-      }
-      
-</style>
+  input[disabled] {
+    cursor: not-allowed;
+  }
 
+  .btn-primary-custom {
+    display: inline-block;
+    font-weight: 400;
+    color: #fff;
+    text-align: center;
+    vertical-align: middle;
+    cursor: pointer;
+    background-color: #31B136;
+    border: 1px solid #31B136;
+    padding: 0.45rem 1.15rem;
+    font-size: 1rem;
+    line-height: 1.5;
+    text-decoration: none;
+    border-radius: 0.5rem;
+    transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  }
+
+  .btn-primary-custom:hover {
+    background-color: #249c1f;
+    border-color: #249c1f;
+    color: white;
+  }
+
+  .btn-primary-custom i {
+    margin-right: 8px;
+  }
+
+  .btn-secondary-custom {
+    display: inline-block;
+    font-weight: 400;
+    color: #fff;
+    text-align: center;
+    vertical-align: middle;
+    cursor: pointer;
+    background-color: #dc3545;
+    border: 1px solid #dc3545;
+    padding: 0.45rem 1.15rem;
+    font-size: 1rem;
+    line-height: 1.5;
+    text-decoration: none;
+    border-radius: 0.5rem;
+    transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  }
+
+  .btn-secondary-custom:hover {
+    background-color: #c82333;
+    border-color: #c82333;
+    color: white;
+  }
+
+  .btn-secondary-custom i {
+    margin-right: 8px;
+  }
+
+  .input-error {
+    border: 1px solid red;
+  }
+
+  .error-message {
+    color: red;
+    font-size: 0.875rem;
+  }
+
+  .divider {
+    border-top: 2px solid #31B136;
+    margin: 0.8rem 0;
+    width: 60%;
+  }
+</style>
 {% endblock %}
 
 {% block content %}
 <section class="ftco-section">
   <div class="container">
-    <form method="post" enctype="multipart/form-data">
+    <h4>Create Company User</h4>
+    <div class="divider"></div>
+
+    <form method="POST" id="companyForm">
       {% csrf_token %}
       <div class="row">
-        <h4>Create Company User</h4>
-        <div>
-          <div class="col-md-6 mb-3">
-            <div class="input-group input-group-icon">
-              <input type="text" name="{{ form.customer_name.name }}" id="{{ form.customer_name.id_for_label }}" placeholder="{{ form.customer_name.label }}" required>
-              <div class="input-icon"><i class="fa fa-building"></i></div>
-            </div>
+        <div class="col-md-6 form-group">
+          {{ form.customer_name.label_tag }}<span class="text-danger">*</span>
+          <div class="input-group-icon">
+            {{ form.customer_name }}
+            <div class="input-icon"><i class="fa fa-building"></i></div>
           </div>
+      {% if form.customer_name.errors %}
+            <small class="error-message">{{ form.customer_name.errors|join:", " }}</small>
+          {% endif %}
+        </div>
 
-          <div class="col">
-            <div class="input-group input-group-icon">
-              <input type="text" name="{{ form.contact.name }}" id="{{ form.contact.id_for_label }}" placeholder="Contact personal" required>
-              <div class="input-icon"><i class="fa fa-user"></i></div>
-            </div>
+        <div class="col-md-6 form-group">
+          {{ form.customer_account.label_tag }}
+          <div class="input-group-icon">
+            {{ form.customer_account }}
+            <div class="input-icon"><i class="fa fa-building"></i></div>
+          </div>
+        {% if form.customer_account.errors %}
+            <small class="error-message">{{ form.customer_account.errors|join:", " }}</small>
+          {% endif %}
+        </div>
 
-            <div class="input-group input-group-icon">
-              <input type="text" name="{{ form.phone_number.name }}" id="{{ form.phone_number.id_for_label }}" placeholder="{{ form.phone_number.label }}" required>
-              <div class="input-icon"><i class="fa fa-phone"></i></div>
-            </div>
+        <div class="col-md-6 form-group">
+          {{ form.base_serial_number.label_tag }}
+          <div class="input-group-icon">
+            {{ form.base_serial_number }}
+            <div class="input-icon"><i class="fa fa-barcode"></i></div>
+          </div>
+          {% if form.base_serial_number.errors %}
+          <small class="error-message">{{ form.base_serial_number.errors|join:", " }}</small>
+        {% endif %}
+      </div>
 
-            <div class="input-group input-group-icon">
-              <input type="email" name="{{ form.email1.name }}" id="{{ form.email1.id_for_label }}" placeholder="{{ form.email1.label }}" required>
-              <div class="input-icon"><i class="fa fa-envelope"></i></div>
-            </div>
+        <div class="col-md-6 form-group">
+          {{ form.contact.label_tag }}<span class="text-danger">*</span>
+          <div class="input-group-icon">
+            {{ form.contact }}
+            <div class="input-icon"><i class="fa fa-user"></i></div>
+          </div>
+          {% if form.contact.errors %}
+          <small class="error-message">{{ form.contact.errors|join:", " }}</small>
+        {% endif %}
+      </div>
 
-            <div class="input-group input-group-icon">
-              <input type="email" name="{{ form.email2.name }}" id="{{ form.email2.id_for_label }}" placeholder="{{ form.email2.label }}">
-              <div class="input-icon"><i class="fa fa-envelope"></i></div>
-            </div>
 
-            <div class="col-half">
-              <div class="input-group input-group-icon">
-                <input type="date" name="{{ form.date_of_registration.name }}" id="{{ form.date_of_registration.id_for_label }}" placeholder="{{ form.date_of_registration.label }}" required>
-                <div class="input-icon"><i class="fa fa-calendar"></i></div>
-              </div>
-            </div>
+        <div class="col-md-6 form-group">
+          {{ form.phone_number.label_tag }}<span class="text-danger">*</span>
+          <div class="input-group-icon">
+            {{ form.phone_number }}
+            <div class="input-icon"><i class="fa fa-phone"></i></div>
+          </div>
+          {% if form.phone_number.errors %}
+          <small class="error-message">{{ form.phone_number.errors|join:", " }}</small>
+        {% endif %}
+      </div>
 
-            <div class="col-half">
-              <div class="input-group input-group-icon">
-                <input type="date" name="{{ form.end_of_subscription.name }}" id="{{ form.end_of_subscription.id_for_label }}" placeholder="{{ form.end_of_subscription.label }}" required>
-                <div class="input-icon"><i class="fa fa-calendar"></i></div>
-              </div>
-            </div>
+        <div class="col-md-6 form-group">
+          {{ form.email1.label_tag }}<span class="text-danger">*</span>
+          <div class="input-group-icon">
+            {{ form.email1 }}
+            <div class="input-icon"><i class="fa fa-envelope"></i></div>
+          </div>
+         {% if form.email1.errors %}
+            <small class="error-message">{{ form.email1.errors|join:", " }}</small>
+          {% endif %}
+        </div>
 
-            <div class="text-left">
-                <button class="btn btn-primary-custom text-start" type="submit" style="width: auto;">Submit</button>
-            </div>
-        
+        <div class="col-md-6 form-group">
+          {{ form.email2.label_tag }}
+          <div class="input-group-icon">
+            {{ form.email2 }}
+            <div class="input-icon"><i class="fa fa-envelope"></i></div>
+          </div>
+          {% if form.email2.errors %}
+            <small class="error-message">{{ form.email2.errors|join:", " }}</small>
+          {% endif %}
+        </div>
+
+        <div class="col-md-6 form-group">
+          {{ form.date_of_registration.label_tag }}<span class="text-danger">*</span>
+          <div class="input-group-icon">
+            {{ form.date_of_registration }}
+            <div class="input-icon"><i class="fa fa-calendar"></i></div>
+          </div>
+        {% if form.date_of_registration.errors %}
+            <small class="error-message">{{ form.date_of_registration.errors|join:", " }}</small>
+          {% endif %}
+        </div>
+
+        <div class="col-md-6 form-group">
+          {{ form.date_of_subscription.label_tag }}<span class="text-danger">*</span>
+          <div class="input-group-icon">
+            {{ form.date_of_subscription }}
+            <div class="input-icon"><i class="fa fa-calendar"></i></div>
+          </div>
+          {% if form.date_of_subscription.errors %}
+            <small class="error-message">{{ form.date_of_subscription.errors|join:", " }}</small>
+          {% endif %}
+        </div>
+
+        <div class="col-md-6 form-group">
+          {{ form.subscription_duration.label_tag }}<span class="text-danger">*</span>
+          <div class="input-group-icon">
+            {{ form.subscription_duration }}
+          </div>
+          <small class="form-text text-muted">Please enter the duration in months (e.g., 1 to 12).</small>
+          {% if form.subscription_duration.errors %}
+            <small class="error-message">{{ form.subscription_duration.errors|join:", " }}</small>
+          {% endif %}
+        </div>
+
+        <div class="col-md-6 form-group">
+          End of Subscription:
+          <div class="input-group-icon">
+            <input type="text" id="end_of_subscription" disabled>
+            <div class="input-icon"><i class="fa fa-calendar"></i></div>
+          </div>
+        </div>
+
+        <div class="col-md-6 form-group">
+          {{ form.software.label_tag }}<span class="text-danger">*</span>
+          <div class="input-group-icon">
+            {{ form.software }}
+          </div>
+          {% if form.software.errors %}
+          <small class="error-message">{{ form.software.errors|join:", " }}</small>
+        {% endif %}
+      </div>
+      
+        <div class="col-md-6 form-group">
+          {{ form.software_edition.label_tag }}<span class="text-danger">*</span>
+          <div class="input-group-icon">
+            {{ form.software_edition }}
+          </div>
+        </div>
+
+        <div class="col-md-6 form-group">
+          {{ form.software_version.label_tag }}<span class="text-danger">*</span>
+          <div class="input-group-icon">
+            {{ form.software_version }}
+          </div>
+        </div>
+
+        <div class="col-md-6 form-group">
+          {{ form.software_addons.label_tag }}(<small class="form-text text-muted">Please select software first.</small>)
+          <div id="addons-container">
+            <!-- Add-ons checkboxes will be appended here -->
           </div>
         </div>
       </div>
+
+      <button type="submit" class="btn-primary-custom"><i class="fa fa-save"></i> Create Company</button>
     </form>
   </div>
 </section>
-{% endblock %}
 
-{% block extend_footer %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+  $('#id_software').change(function() {
+    let softwareId = $(this).val();
+    $.ajax({
+      url: "{% url 'load_editions_and_versions' %}",
+      data: {
+        'software': softwareId
+      },
+      success: function(data) {
+
+        var $addonsContainer = $('#addons-container');
+
+        // Clear previous options
+        $('#id_software_edition').empty();
+        $('#id_software_version').empty();
+        $addonsContainer.empty();
+
+        // Populate editions
+        $.each(data.editions, function(index, edition) {
+          $('#id_software_edition').append(new Option(edition.name, edition.id));
+        });
+
+        // Populate versions
+        $.each(data.versions, function(index, version) {
+          $('#id_software_version').append(new Option(version.name, version.id));
+        });
+
+        // Populate addons
+        $.each(data.addons, function(index, addon) {
+          $('#id_software_addons').append(new Option(addon.name, addon.id));
+        });
+
+        if (data.addons && data.addons.length > 0) {
+          data.addons.forEach(function(addon, index) {
+            var $checkbox = $('<input>', {
+              type: 'checkbox',
+              name: 'software_addons',
+              value: addon.id,
+              id: 'addon-' + index
+            });
+            var $label = $('<label>', {
+              for: 'addon-' + index,
+              text: addon.name
+            });
+
+            $addonsContainer.append($('<div>', { class: 'form-check' })
+              .append($checkbox)
+              .append($label)
+            );
+          });
+        } else {
+          $addonsContainer.append($('<p>', {
+            text: 'No add-ons available'
+          }));
+        }
+      },
+      error: function(xhr) {
+        alert(xhr.responseJSON.error);
+      }
+    });
+  });
+  
+
+  $('#id_subscription_duration').on('input', function() {
+    const dateOfSubscription = new Date($('#id_date_of_subscription').val());
+    const duration = parseInt($(this).val());
+
+    if (dateOfSubscription && duration) {
+      const endDate = new Date(dateOfSubscription.setMonth(dateOfSubscription.getMonth() + duration));
+      $('#end_of_subscription').val(endDate.toISOString().slice(0, 10));
+    } else {
+      $('#end_of_subscription').val('');
+    }
+  });
+</script>
+
 {% endblock %}

@@ -1,0 +1,305 @@
+{% extends "main.html" %}
+
+{% block page_title %}Add Software Addon{% endblock %}
+
+{% block extend_head %}
+<title>Duxte | Create Addon</title>
+{% endblock %}
+
+{% block extend_header %}
+
+<style>
+  .btn-primary-custom {
+      display: inline-block;
+      font-weight: 400;
+      color: #fff;
+      text-align: center;
+      vertical-align: middle;
+      cursor: pointer;
+      background-color: #31B136;
+      border: 1px solid #31B136;
+      padding: 0.45rem 1.15rem;
+      font-size: 1rem;
+      line-height: 1.5;
+      text-decoration: none;
+      border-radius: 0.5rem;
+      transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  }
+  
+    
+    .btn-primary-custom:hover {
+      background-color: #249c1f;
+      border-color: #249c1f;
+      color: white;
+  }
+
+  .input-error {
+    border: 1px solid red;
+  }
+
+  .divider {
+    border-top: 2px solid #31B136;
+    margin: 0.8rem 0;
+    width: 60%;
+  }
+
+  .category-list {
+    margin-top: 20px;
+    background-color: #f5f5f5;
+    padding: 15px;
+    border-radius: 5px;
+  }
+
+  .category-list h5 {
+    font-weight: bold;
+    margin-bottom: 10px;
+  }
+
+  .category-pill {
+    display: inline-block;
+    background-color: #e9ecef;
+    color: #333;
+    padding: 8px 15px;
+    border-radius: 20px;
+    font-size: 0.9em;
+    margin: 5px;
+    position: relative;
+    transition: background-color 0.3s ease;
+  }
+
+  .category-pill:hover {
+    background-color: #31B136;
+    color: white;
+  }
+
+  .category-pill .actions {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .category-pill:hover .actions {
+    opacity: 1;
+  }
+
+  .category-pill i {
+    margin-left: 8px;
+    cursor: pointer;
+  }
+
+  /* Alert Styles */
+  .alert-content {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+    border-radius: 5px;
+    margin-bottom: 15px;
+  }
+
+  .alert {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+    border: 1px solid #f5c6cb;
+    border-radius: 5px;
+    margin-bottom: 15px;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="ftco-section">
+  <div class="container">
+    <h4>Add Addons</h4>
+    <div class="divider"></div>
+
+    {% if messages %}
+    <div class="alert alert-success" role="alert">
+      <i class="fas fa-check-circle"></i>
+      {% for message in messages %}
+        {{ message }}
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    {% if errors %}
+    <div class="alert alert-danger" role="alert">
+      <i class="fas fa-exclamation-triangle"></i>
+      <ul>
+        {% for error in errors %}
+        <li>{{ error }}</li>
+        {% endfor %}
+      </ul>
+    </div>
+    {% endif %}
+
+    <div class="modal fade" id="editAddonModal" tabindex="-1" role="dialog" aria-labelledby="editAddonModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="editAddonModalLabel">Edit Addon:</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <form id="editAddonForm">
+              {% csrf_token %}
+              <input type="hidden" id="edit-addon-id" name="id">
+              <div class="form-group">
+                <label for="edit-addon-name">Addon Name</label>
+                <input type="text" id="edit-addon-name" name="name" required>
+              </div>
+              <div class="text-left" style="margin-top: 15px;">
+                <button class="btn btn-primary-custom" type="submit">Save Change</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-6">
+        <form method="POST">
+          {% csrf_token %}
+          <div class="col-md-12 mb-3 form-group">
+            {{ form.name.label_tag }}<span class="text-danger">*</span>
+            <div class="input-group-icon">
+              <input type="text" name="{{ form.name.name }}" id="{{ form.name.id_for_label }}" class="{% if form.name.errors %}input-error{% endif %}">
+              <div class="input-icon"><i class="fa fa-puzzle-piece"></i></div>
+            </div>
+            {% if form.name.errors %}
+              <small class="text-danger">{{ form.name.errors|join:", " }}</small>
+            {% endif %}
+            <small class="form-text text-muted">Enter addons separated by commas (e.g., Addon1, Addon2, Addon3).</small>
+          </div>
+          <div class="text-left">
+            <button class="btn btn-primary-custom" type="submit">Submit</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="col-md-6">
+        <div class="category-list">
+          <h5>Existing Addons</h5>
+          {% if addons %}
+          <div id="category-list-container">
+            {% for addon in addons %}
+            <span id="addon-{{ addon.id }}" class="category-pill">
+              {{ addon.name }}
+              <span class="actions">
+                <i class="fas fa-pen" title="Edit" onclick="editAddon('{{ addon.id }}', '{{ addon.name }}')"></i>
+                <i class="fas fa-trash" title="Delete" onclick="deleteAddon('{{ addon.id }}')"></i>
+              </span>
+            </span>
+            {% endfor %}
+          </div>
+          {% else %}
+          <p>No addons available.</p>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% block extend_footer %}
+
+<script>
+  // Function to handle editing of addons
+  function editAddon(addonId, addonName) {
+    document.getElementById('edit-addon-id').value = addonId;
+    document.getElementById('edit-addon-name').value = addonName;
+    
+    var editModal = new bootstrap.Modal(document.getElementById('editAddonModal'));
+    editModal.show();
+    
+  }
+
+  // Function to handle deletion of addons
+  function deleteAddon(addonId) {
+    if (confirm('Are you sure you want to delete this addon?')) {
+      fetch(`/delete-addon/${addonId}/`, {
+        method: 'POST',
+        headers: {
+          'X-CSRFToken': getCookie('csrftoken'),
+          'Content-Type': 'application/json',
+        },
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          location.reload();
+        } else {
+          alert('Error deleting addon.');
+        }
+      });
+    }
+  }
+
+  // Utility function to get CSRF token
+  function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+      const cookies = document.cookie.split(';');
+      for (let i = 0; i < cookies.length; i++) {
+        const cookie = cookies[i].trim();
+        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+          cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+          break;
+        }
+      }
+    }
+    return cookieValue;
+  }
+
+  // Fading out alerts after a few seconds
+  document.addEventListener('DOMContentLoaded', function() {
+    var alerts = document.querySelectorAll('.fade-out-alert');
+    alerts.forEach(function(alert) {
+      setTimeout(function() {
+        alert.style.opacity = 0;
+        setTimeout(function() {
+          alert.remove();
+        }, 300);
+      }, 7000);
+    });
+  });
+
+  // jQuery to handle form submission for editing addons
+  $(document).ready(function() {
+    $('#editAddonForm').on('submit', function(e) {
+        e.preventDefault();
+        var addonId = $('#edit-addon-id').val();
+        var addonName = $('#edit-addon-name').val();
+  
+        $.ajax({
+            type: 'POST',
+            url: '/edit-software-addon/' + addonId + '/',
+            data: {
+                'id': addonId,
+                'name': addonName,
+                'csrfmiddlewaretoken': '{{ csrf_token }}'
+            },
+            success: function(response) {
+                $('#editAddonModal').modal('hide');
+                // Update the addon name in the list
+                $('span#addon-' + addonId).text(addonName);
+                alert('Addon updated successfully!');
+            },
+            error: function(xhr) {
+                alert('An error occurred: ' + xhr.responseText);
+            }
+        });
+    });
+  });
+</script>
+{% endblock %}
+{% endblock %}

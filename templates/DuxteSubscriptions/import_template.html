@@ -1,0 +1,128 @@
+{% extends "main.html" %}
+{% block page_title %}Templates{% endblock %}
+
+{% block extend_head %}
+<title>Duxte | Import Template</title>
+<style>
+    /* Circle Icon Styles */
+    .import-circle {
+        width: 200px;
+        height: 200px;
+        background-color: #ffffff;
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        box-shadow: 0 0 25px rgba(0, 0, 0, 0.2);
+        transition: transform 0.3s ease-in-out, background-color 0.3s ease, box-shadow 0.3s ease;
+        cursor: pointer;
+        margin: 20px; /* Added margin for spacing */
+    }
+
+    .import-circle:hover {
+        transform: scale(1.1);
+        background-color: #f0f2f5;
+        box-shadow: 0 0 30px rgba(0, 0, 0, 0.25);
+    }
+
+    .import-icon {
+        font-size: 4em; /* Slightly larger for better visibility */
+        color: #31B136; /* Dominant color */
+    }
+
+    .import-text {
+        font-size: 1.5em; /* Larger font size for emphasis */
+        margin-top: 15px;
+        color: #31B136; /* Dominant color */
+        font-weight: 600; /* Bold text */
+        letter-spacing: 0.5px; /* Slightly more spaced out letters */
+        text-transform: capitalize; /* Capitalize text */
+        text-decoration: none; /* Ensure no underline */
+        transition: color 0.3s ease; /* Smooth color transition */
+    }
+
+    .import-link {
+        text-decoration: none; /* Remove underline from link */
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 200px; /* Ensure the link has consistent width */
+    }
+
+    .import-link:hover .import-text {
+        color: #28a745; /* Darker shade of green on hover */
+    }
+
+    .divider {
+        border-top: 2px solid #31B136; /* Thicker divider with dominant color */
+        margin: 20px auto; /* Centered and adjusted margin */
+        width: 60%; /* Adjust width to fit the section */
+    }
+
+    .import-container {
+        display: flex;
+        justify-content: left;
+        align-items: center;
+        gap: 60px; /* Adjust gap between circles */
+    }
+
+    @media (max-width: 768px) {
+        .import-circle {
+            width: 150px;
+            height: 150px;
+        }
+
+        .import-text {
+            font-size: 1.2em; /* Adjust font size for smaller screens */
+        }
+
+        .import-container {
+            gap: 40px; /* Adjust gap for smaller screens */
+        }
+    }
+
+    .divider {
+        border-top: 2px solid #31B136; /* Thicker divider with dominant color */
+        margin: 0.8rem 0;
+        width: 60%; /* Adjust width to fit the section */
+    }
+    @media (max-width: 480px) {
+        .import-circle {
+            width: 100px;
+            height: 100px;
+        }
+    
+        .import-text {
+            font-size: 1em; /* Further adjust font size for very small screens */
+        }
+    
+        .import-container {
+            gap: 10px; /* Further reduce gap for very small screens */
+        }
+    }
+    
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="ftco-section">
+    <div class="container">
+        <h4 class="mb-4">Import</h4>
+        <div class="divider"></div>
+        <div class="import-container">
+            <a href="{% url 'import_software_view' %}" class="import-link">
+                <div class="import-circle">
+                    <i class="fa fa-download import-icon"></i>
+                </div>
+                <div class="import-text">Import Software</div>
+            </a>
+            <a href="{% url 'import_users' %}" class="import-link">
+                <div class="import-circle">
+                    <i class="fa fa-download import-icon"></i>
+                </div>
+                <div class="import-text">Import Company</div>
+            </a>
+        </div>
+    </div>
+</section>
+{% endblock %}

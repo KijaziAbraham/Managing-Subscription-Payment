@@ -1,89 +1,240 @@
 {% extends "main.html" %}
+{% block page_title %}Create Software{% endblock %}
 
 {% block extend_head %}
-<title>Duxte|Create Software</title>
-{% endblock %}
-
-{% block extend_header %}
+<title>Duxte | Create Software</title>
 <style>
-  .btn-primary-custom {
-    display: inline-block;
-    font-weight: 400;
-    color: #fff;
-    text-align: center;
-    vertical-align: middle;
-    cursor: pointer;
-    background-color: #31B136;
-    border: 1px solid #31B136;
-    padding: 0.45rem 1.15rem;
-    font-size: 1rem;
-    line-height: 1.5;
-    text-decoration: none;
-    border-radius: 0.5rem;
-    transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    
+    input[disabled] {
+      cursor: not-allowed;
+    }
+
+    .btn-primary-custom {
+      display: inline-block;
+      font-weight: 400;
+      color: #fff;
+      text-align: center;
+      vertical-align: middle;
+      cursor: pointer;
+      background-color: #31B136;
+      border: 1px solid #31B136;
+      padding: 0.45rem 1.15rem;
+      font-size: 1rem;
+      line-height: 1.5;
+      text-decoration: none;
+      border-radius: 0.5rem;
+      transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    }
+
+    .btn-primary-custom:hover {
+      background-color: #249c1f;
+      border-color: #249c1f;
+      color: white;
+    }
+
+    .btn-primary-custom i {
+      margin-right: 8px;
+    }
+
+    .btn-secondary-custom {
+      display: inline-block;
+      font-weight: 400;
+      color: #fff;
+      text-align: center;
+      vertical-align: middle;
+      cursor: pointer;
+      background-color: #dc3545;
+      border: 1px solid #dc3545;
+      padding: 0.45rem 1.15rem;
+      font-size: 1rem;
+      line-height: 1.5;
+      text-decoration: none;
+      border-radius: 0.5rem;
+      transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    }
+
+    .btn-secondary-custom:hover {
+      background-color: #c82333;
+      border-color: #c82333;
+      color: white;
+    }
+
+    .btn-secondary-custom i {
+      margin-right: 8px;
+    }
+
+    .input-error {
+      border: 1px solid red;
+    }
+
+    .error-message {
+      color: red;
+      font-size: 0.875rem;
+    }
+
+    .divider {
+      border-top: 2px solid #31B136;
+      margin: 0.8rem 0;
+      width: 60%;
+    }
+
+    .checkbox-group {
+      display: flex;
+      flex-wrap: wrap;
+    }
+    
+    .checkbox-group div {
+      width: 20%; /* 5 checkboxes per row */
+      box-sizing: border-box; 
+      padding: 0.5rem 0; 
+    }
+    .alert-content {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px;
+      background-color: #f8d7da; 
+      color: #721c24; 
+      border: 1px solid #f5c6cb; 
+      border-radius: 5px;
+      margin-bottom: 15px;
   }
-  
-  .btn-primary-custom:hover {
-    background-color: #249c1f;
-    border-color: #249c1f;
-    color: white;
-  
+    .error-log {
+      margin-top: 20px;
+      background-color: #f8d7da;
+      color: #721c24; 
+      border: 1px solid #f5c6cb; 
+      border-radius: 5px;
+      padding: 15px;
   }
-  .btn-primary-custom i {
-    margin-right: 8px;
+
+  .error-title {
+      margin-bottom: 10px;
+      font-size: 1.2em;
+      color: #721c24;
+  }
+
+  .error-list {
+      list-style-type: none;
+      padding: 0;
+  }
+
+  .error-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 5px;
+      font-size: 0.95em;
+      color: #721c24;
+  }
+
+  .error-item i {
+      color: #dc3545; 
   }
 </style>
 {% endblock %}
 
 {% block content %}
 <section class="ftco-section">
-  <div class="container">
-    <form method="post" enctype="multipart/form-data">
-      {% csrf_token %}
-      <div class="row">
-        <h4>Add Software</h4>
+    <div class="container">
+      <h4>Create Software</h4>
+      <div class="divider"></div>
 
-        <div class="col">
-          <div class="input-group">
-            {{ form.name.label_tag }}
-            <div class="input-icon"><i class="fa fa-cogs"></i></div>
-            {{ form.name }}
-            {% if form.name.errors %}
-              <div class="error">{{ form.name.errors }}</div>
-            {% endif %}
-          </div>
-        </div>
-        
-        <div class="col">
-          <div class="input-group">
-            {{ form.category.label_tag }}
-            <div class="input-icon"><i class="fa fa-tags"></i></div>
-            {{ form.category }}
-            {% if form.category.errors %}
-              <div class="error">{{ form.category.errors }}</div>
-            {% endif %}
-          </div>
-        </div>
-        
-        <div class="col">
-          <div class="input-group">
-            {{ form.type.label_tag }}
-            <div class="input-icon"><i class="fa fa-cogs"></i></div>
-            {{ form.type }}
-            {% if form.type.errors %}
-              <div class="error">{{ form.type.errors }}</div>
-            {% endif %}
-          </div>
-        </div>
-        
-        <div class="text-left">
-            <button class="btn btn-primary-custom" type="submit">Submit</button>
-        </div>
+  {% if messages %}
+  {% for message in messages %}
+      <div class="alert-content fade-out-alert">
+          <i class="fas fa-info-circle"></i> {{ message }}
       </div>
-    </form>
-  </div>
-</section>
-{% endblock %}
+  {% endfor %}
+  {% endif %}
 
-{% block extend_footer %}
+
+  {% if errors %}
+  <div class="error-log">
+    <h5 class="error-title"><i class="fas fa-info-circle"></i> Error Log</h5>
+    <ul class="error-list">
+        {% for error in errors %}
+            <li class="error-item">
+                <i class="fa fa-exclamation-triangle"></i> {{ error }}
+            </li>
+        {% endfor %}
+    </ul>
+  </div>
+  {% endif %}
+    
+      <form method="post">
+        {% csrf_token %}
+        <div class="row">
+          <div class="col-md-6 form-group">
+            {{ form.name.label_tag }}<span class="text-danger">*</span>
+            <div class="input-group-icon">
+              {{ form.name }}
+              <div class="input-icon"><i class="fa fa-cogs"></i></div>
+            </div>
+            {% if form.name.errors %}
+            <small class="error-message">{{ form.name.errors|join:", " }}</small>
+            {% endif %}
+          </div>
+          
+          <div class="col-md-6 form-group">
+            {{ form.category.label_tag }}<span class="text-danger">*</span>
+            <div class="input-group-icon">
+              {{ form.category }}
+              <div class="input-icon"><i class="fa fa-list"></i></div>
+            </div>
+            {% if form.category.errors %}
+            <small class="error-message">{{ form.category.errors|join:", " }}</small>
+            {% endif %}
+          </div>
+
+          <div class="col-md-12 form-group">
+            <label for="editions">Software Editions<span class="text-danger">*</span></label>
+            <div class="input-group-icon checkbox-group">
+              {% for edition in available_editions %}
+              <div>
+                <input type="checkbox" id="edition_{{ forloop.counter }}" name="editions" value="{{ edition.id }}">
+                <label for="edition_{{ forloop.counter }}">{{ edition.name }}</label>
+              </div>
+              {% endfor %}
+            </div>
+            {% if form.editions.errors %}
+            <small class="error-message">{{ form.editions.errors|join:", " }}</small>
+            {% endif %}
+          </div>
+
+          <div class="col-md-12 form-group">
+            <label for="versions">Software Versions<span class="text-danger">*</span></label>
+            <div class="input-group-icon checkbox-group">
+              {% for version in available_versions %}
+              <div>
+                <input type="checkbox" id="version_{{ forloop.counter }}" name="versions" value="{{ version.id }}">
+                <label for="version_{{ forloop.counter }}">{{ version.name }}</label>
+              </div>
+              {% endfor %}
+            </div>
+            {% if form.versions.errors %}
+            <small class="error-message">{{ form.versions.errors|join:", " }}</small>
+            {% endif %}
+          </div>
+
+          <div class="col-md-12 form-group">
+            <label for="addons">Software Addons<span class="text-danger">*</span></label>
+            <div class="input-group-icon checkbox-group">
+              {% for addon in available_addons %}
+              <div>
+                <input type="checkbox" id="addon_{{ forloop.counter }}" name="addons" value="{{ addon.id }}">
+                <label for="addon_{{ forloop.counter }}">{{ addon.name }}</label>
+              </div>
+              {% endfor %}
+            </div>
+            {% if form.addons.errors %}
+            <small class="error-message">{{ form.addons.errors|join:", " }}</small>
+            {% endif %}
+          </div>
+        </div>
+
+        <button type="submit" class="btn-primary-custom"><i class="fa fa-save"></i> Create Software</button>
+      </form>
+    </div>
+</section>
 {% endblock %}

@@ -1,0 +1,269 @@
+{% extends "main.html" %}
+{% block page_title %}Import Company{% endblock %}
+
+{% block extend_head %}
+<title>Duxte | Import Company</title>
+{% endblock %}
+
+{% block content %}
+
+<style>
+    .template-option {
+        margin-bottom: 30px;
+    }
+    .divider {
+        border-top: 2px solid #31B136;
+        margin: 0.8rem 0;
+        width: 60%;
+    }
+    .btn-custom {
+        border-radius: 5px;
+        padding: 10px 20px;
+    }
+    .alert {
+        margin-top: 20px;
+    }
+    .error-log {
+        color: red;
+        margin-top: 20px;
+    }
+    .icon-button {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        background-color: #31B136;
+        color: white;
+        padding: 10px 20px;
+        border-radius: 5px;
+        text-decoration: none;
+    }
+    .icon-button i {
+        font-size: 1.5em;
+    }
+    .small-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 8px 12px;
+        font-size: 0.9rem;
+        color: #fff;
+        background-color: #31B136;
+        border-radius: 5px;
+        text-decoration: none;
+        transition: background-color 0.3s ease;
+    }
+
+    .small-button i {
+        margin-right: 5px; /* Add some space between icon and text */
+    }
+
+    .small-button:hover {
+        background-color: #28a745; /* Slightly darker green on hover */
+    }
+    .btn-primary-custom {
+        display: inline-block;
+        font-weight: 400;
+        color: #fff;
+        text-align: center;
+        vertical-align: middle;
+        cursor: pointer;
+        background-color: #31B136;
+        border: 1px solid #31B136;
+        padding: 0.45rem 1.15rem;
+        font-size: 1rem;
+        line-height: 1.5;
+        text-decoration: none;
+        border-radius: 0.5rem;
+        transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+      }
+    
+      .btn-primary-custom:hover {
+        background-color: #249c1f;
+        border-color: #249c1f;
+        color: white;
+      }
+    
+      .btn-primary-custom i {
+        margin-right: 8px;
+      }
+    
+      .btn-secondary-custom {
+        display: inline-block;
+        font-weight: 400;
+        color: #fff;
+        text-align: center;
+        vertical-align: middle;
+        cursor: pointer;
+        background-color: #dc3545; /* Red color */
+        border: 1px solid #dc3545; /* Red color */
+        padding: 0.45rem 1.15rem;
+        font-size: 1rem;
+        line-height: 1.5;
+        text-decoration: none;
+        border-radius: 0.5rem;
+        transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+      }
+    
+      .btn-secondary-custom:hover {
+        background-color: #c82333; /* Darker red for hover */
+        border-color: #c82333; /* Darker red for hover */
+        color: white;
+      }
+    
+      .btn-secondary-custom i {
+        margin-right: 8px;
+      }
+      .input-error {
+        border: 1px solid red;
+    }
+    
+    .error-message {
+        color: red;
+        font-size: 0.875rem;
+    }
+    
+    .divider {
+        border-top: 2px solid #31B136; /* Thicker divider with dominant color */
+        margin: 0.8rem 0;
+        width: 60%; /* Adjust width to fit the section */
+    }
+    
+    .form-check {
+        margin-bottom: 0.5rem;
+    }
+    
+    .alert-content {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px;
+        background-color: #f8d7da; /* Light red background */
+        color: #721c24; /* Dark red text */
+        border: 1px solid #f5c6cb; /* Border matching the background */
+        border-radius: 5px;
+        margin-bottom: 15px;
+    }
+    
+    .error-log {
+        margin-top: 20px;
+        background-color: #f8d7da; /* Light red background */
+        color: #721c24; /* Dark red text */
+        border: 1px solid #f5c6cb; /* Border matching the background */
+        border-radius: 5px;
+        padding: 15px;
+    }
+    
+    .error-title {
+        margin-bottom: 10px;
+        font-size: 1.2em;
+        color: #721c24;
+    }
+    
+    .error-list {
+        list-style-type: none;
+        padding: 0;
+    }
+    
+    .error-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 5px;
+        font-size: 0.95em;
+        color: #721c24;
+    }
+    
+    .error-item i {
+        color: #dc3545; /* Red color for the icon */
+    }
+</style>    
+
+<section class="ftco-section">
+        <div class="container">
+            <h4 class="mb-4">Import Customers</h4>
+            <div class="divider"></div>
+
+
+    <!-- Display success or error messages -->
+    {% if messages %}
+    {% for message in messages %}
+        <div class="alert-content fade-out-alert">
+            <i class="fas fa-info-circle"></i> {{ message }}
+        </div>
+    {% endfor %}
+    {% endif %}
+
+
+    <!-- Display detailed errors -->
+    {% if errors %}
+    <div class="error-log">
+        <h5 class="error-title"><i class="fas fa-exclamation-triangle"></i> Error Log:</h5>
+        <ul class="error-list">
+            {% for error in errors %}
+                <li class="error-item">
+                    <i class="fas fa-exclamation-triangle"></i> {{ error }}
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+
+            <!-- Download Excel Template -->
+            <div class="template-option">
+                <h5 class="mb-3">Download Excel Template</h5>
+                <a href="{% url 'download_company_template' %}" class="btn btn-primary-custom">
+                    <i class="fas fa-download"></i> Download Template
+                </a>
+            </div>
+
+            <!-- Upload Excel File for Import -->
+            <div class="template-option">
+                <form method="post" enctype="multipart/form-data" action="{% url 'import_users' %}">
+                    {% csrf_token %}
+                    <div class="row mb-30">
+                        <div class="col-md-6 form-group">
+                            <label class="label-text-title color-heading font-medium font-16 mb-3" for="file">
+                                Select Excel File <span class="text-danger">*</span>
+                            </label>
+                            <div class="cv-upload-files">
+                                <div>
+                                    <input type="file" class="form-control" id="file" name="file" required>
+                                </div>
+                                <p class="font-14 color-heading text-center mt-2 color-gray">
+                                    Accepted files (Excel)
+                                </p>
+                                {% if form.file.errors %}
+                                    <div class="error-message">
+                                        <i class="fas fa-exclamation-triangle"></i> {{ form.file.errors }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary-custom">
+                        <i class="fas fa-upload"></i> Upload and Import
+                    </button>
+                </form>
+            </div>
+        </div>
+</section>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Select all elements with the class 'fade-out-alert'
+        var alerts = document.querySelectorAll('.fade-out-alert');
+
+        // Iterate over each alert
+        alerts.forEach(function(alert) {
+            // Set a timeout to remove the alert after 3 seconds (3000 milliseconds)
+            setTimeout(function() {
+                alert.style.opacity = 0; // Fade out
+                setTimeout(function() {
+                    alert.remove(); // Remove from DOM
+                }, 300); // Wait for the fade-out transition to complete
+            }, 3000); // 3 seconds delay
+        });
+    });
+</script>
+
+
+{% endblock %}

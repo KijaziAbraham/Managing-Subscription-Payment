@@ -1,9 +1,8 @@
 {% extends "main.html" %}
-{% block page_title %}Company User List{% endblock %}
-
+{% block page_title %}Deleted Customers{% endblock %}
 
 {% block extend_head %}
-<title>Duxte | Company User List</title>
+<title>Duxte|Deleted Customer</title>
 {% endblock %}
 
 {% block extend_header %}
@@ -16,28 +15,40 @@
       text-align: center;
       vertical-align: middle;
       cursor: pointer;
-      background-color: #f0a500;
-      border: 1px solid #f0a500;
+      background-color: #28a745; 
+      border-color: #28a745; 
       padding: .5em 1em;
       font-size: .88em;
-      color: black;
+      color: #fff; /* Text color */
       line-height: 1.5;
       text-decoration: none;
       border-radius: 0.25rem;
       transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
-    }
-    .btn-primary-custom2:hover {
-      background-color: #d18b00;
-      border-color: rgba(0, 0, 0, 0.5);
-    }
-
-    .divider {
-      border-top: 2px solid #31B136; /* Thicker divider with dominant color */
-      margin: 0.8rem 0;
-      width: 60%; /* Adjust width to fit the section */
   }
 
-    /* DataTables styling */
+  .btn-primary-custom2 i {
+      color: #fff; /* Icon color */
+  }
+
+  .btn-primary-custom2:hover {
+      background-color: #218838; 
+      border-color: #1e7e34;
+      color: #fff; /* Ensure text remains white on hover */
+  }
+
+  .btn-primary-custom2:hover i {
+      color: #fff; /* Ensure icon remains white on hover */
+  }
+
+  .divider {
+    border-top: 2px solid #31B136; /* Thicker divider with dominant color */
+    margin: 0.8rem 0;
+    width: 60%; /* Adjust width to fit the section */
+  }
+
+    /*---------------------------------------------------------------------
+    Basic DataTables styling
+    ---------------------------------------------------------------------*/
     .dataTables_wrapper .dataTables_paginate .paginate_button {
       padding: 0.5em 1em;
       margin: 0 0.1em;
@@ -70,23 +81,6 @@
       border-radius: 0.2rem;
       background-color: #fff;
     }
-
-    .btn-dustbin {
-      background: none;
-      border: none;
-      cursor: pointer;
-      color: #dc3545;
-      font-size: 1.2em;
-    }
-    .btn-dustbin:hover {
-      color: #c82333;
-    }
-
-    .action-buttons {
-      display: flex;
-      gap: 0.5rem; /* Adjust the gap between buttons as needed */
-    }
-
     .alert {
       display: flex;
       align-items: center;
@@ -96,62 +90,29 @@
       border-radius: 5px;
       margin-bottom: 15px;
   }
-
-
-  .action-buttons .btn-primary-custom2 {
-    margin-right: 10px; /* Adjust spacing between the buttons */
-  }
-
-  .action-buttons .fa-plus {
-    margin-right: 5px; /* Adds space between the icon and the text */
-  }
-
 </style>
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+
 {% endblock %}
 
 {% block content %}
-
 <section class="ftco-section">
     <div class="container">
-      <h4 class="mb-4">
-  
+      <h4 class="mb-4">Deleted Users</h4>
+      <div class="divider"></div>
 
-        {% if category %}{{ category }}{% else %} {% endif %} Customers List
-    </h4>    
-    <div class="divider"></div>
-
-    {% if messages %}
-    <div class="alert alert-success" role="alert">
-        <i class="fas fa-check-circle"></i> 
-        {% for message in messages %}
-            {{ message }}
-        {% endfor %}
-    </div>
+      {% if messages %}
+      <div class="alert alert-success" role="alert">
+          <i class="fas fa-check-circle"></i> 
+          {% for message in messages %}
+              {{ message }}
+          {% endfor %}
+      </div>
   {% endif %}
 
-  <div class="action-buttons mb-3 d-flex justify-content-between align-items-center">
-    <div>
-      {% if category %}
-      <a href="{% url 'export_to_pdf' category %}" class="btn btn-primary-custom2">PDF</a>
-      <a href="{% url 'export_to_excel' category %}" class="btn btn-primary-custom2">Excel</a>
-      {% else %}
-      <a href="{% url 'export_to_pdf' %}" class="btn btn-primary-custom2">PDF</a>
-      <a href="{% url 'export_to_excel' %}" class="btn btn-primary-custom2">Excel</a>
-      {% endif %}
-    </div>
-    
-    <!-- Add button -->
-    <div>
-      <a href="{% url 'create_company_user' %}" class="btn btn-primary-custom2">
-        <i class="fa fa-plus"></i> Add New Company
-      </a>
-    </div>
-  </div>
 
-
-      
     <div class="table-responsive">
-
       <table class="table table-borderless datatable">
         <thead>
           <tr>
@@ -160,55 +121,38 @@
             <th>Email</th>
             <th>Subscription Date</th>
             <th>Subscription End</th>
-            <th>Subscription</th>
             <th>Status</th>
             <th>Actions</th>
           </tr>
         </thead>
         <tbody>
-          {% for company_user in company_users %}
+          {% for deleted_user in deleted_users %}
           <tr>
             <td>{{ forloop.counter }}</td>
-            <td>{{ company_user.customer_name }}</td>
-            <td>{{ company_user.email1 }}</td>
-            <td>{{ company_user.date_of_subscription }}</td>
-            <td>{{ company_user.end_of_subscription }}</td>
+            <td>{{ deleted_user.customer_name }}</td>
+            <td>{{ deleted_user.email1 }}</td>
+            <td>{{ deleted_user.date_of_subscription }}</td>
+            <td>{{ deleted_user.end_of_subscription }}</td>
             <td>
-              {% if company_user.subscription_valid %}
+              {% if deleted_user.is_subscription_valid %}
               <span class="badge bg-success">Valid</span>
               {% else %}
               <span class="badge bg-danger">Expired</span>
               {% endif %}
             </td>
             <td>
-              <form method="post" action="{% url 'toggle_status' company_user.id %}" id="toggle-status-form-{{ company_user.id }}">
-                {% csrf_token %}
-                <button type="button" class="btn {% if company_user.is_active %}btn-toggle-active{% else %}btn-toggle-inactive{% endif %}" onclick="toggleActive({{ company_user.id }});">
-                  {% if company_user.is_active %}Active{% else %}Inactive{% endif %}
-                </button>
-              </form>
-            </td>
-            <td>
-              <div class="action-buttons">
-                <a href="{% url 'company_user_detail' company_user.id %}">
-                  <i class="fa fa-eye"></i>
-                </a>
-                {% if user.is_superuser %}
-                <form method="post" action="{% url 'soft_delete_user' company_user.id %}" id="soft-delete-form-{{ company_user.id }}">
-                  {% csrf_token %}
-                  <button type="submit" class="btn btn-dustbin" onclick="return confirm('Are you sure you want to delete this user?');">
-                    <i class="fa fa-trash"></i>
-                  </button>
-                </form>
-              {% endif %}
-              </div>
-            </td>
+              <a href="{% url 'restore_user' deleted_user.id %}" class="btn btn-primary-custom2" onclick="return confirm('Are you sure you want to restore this user?');">
+                <i class="fa fa-undo" style="color: white;"></i> Restore
+            </a>
+            
+          </td>
+          
           </tr>
           {% endfor %}
         </tbody>
       </table>
     </div>
-    <div>
+    </div>
 </section>
 
 <script>

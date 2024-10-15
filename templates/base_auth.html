@@ -52,7 +52,6 @@
         {%endblock%}
 </main>
 
-    <!-- JavaScript code to trigger SweetAlert -->
 <script>
     {% if messages %}
         {% for message in messages %}
@@ -63,20 +62,21 @@
             {% endif %}
         {% endfor %}
     {% endif %}
-    </script>
+</script>
     
-    <footer class="footer">
-        <div class="footer-bottom">
-            <div class="footer-item">
-                <div class="footer-content">
-                    <span class="footer-text">English (TZ)</span>
-                    <span class="footer-text">&copy; 2024 Duxte Ltd. All Rights Reserved.</span>
-                </div>
-            </div>
+<footer class="footer">
+    <div class="footer-bottom">
+      <div class="footer-item">
+        <div class="footer-content">
+          <span class="footer-text">English (TZ)</span>
+          <span class="footer-text"> &copy; {{ current_year }} <strong><span>Duxte Limited</span></strong>. All Rights Reserved
+</span>
+          <div class="credits">
+            Designed by <a href="#">Duxte</a>
         </div>
-       
-      </footer>
 
+    </div>
+  </footer>
       <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
 
   <!-- Vendor JS Files -->
@@ -97,3 +97,4 @@
   {%endblock%}
     </body>
     </html>
+    

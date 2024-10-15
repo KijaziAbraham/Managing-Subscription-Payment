@@ -1,4 +1,5 @@
 {% extends "main.html" %}
+{% block page_title %}Company Detail{% endblock %}
 
 {% block extend_head %}
 <title>Duxte|Company User Detail</title>
@@ -12,7 +13,6 @@
     font-weight: 400;
     color: #fff;
     box-sizing: border-box;
-
     text-align: center;
     vertical-align: middle;
     cursor: pointer;
@@ -31,74 +31,127 @@
     border-color: rgba(0, 0, 0, 0.5); 
   }
   
+  .divider {
+    border-top: 2px solid #31B136; /* Thicker divider with dominant color */
+    margin: 0.8rem 0;
+    width: 60%; /* Adjust width to fit the section */
+  }
 </style>
+
 <section class="ftco-section">
   <div class="container">
     <h4>Company User Detail</h4>
-    <table class="table table-borderless">
-      <tr>
-        <th>Company Name:</th>
-        <td>{{ company_user.customer_name }}</td>
-      </tr>
-      <tr>
-        <th>Contact:</th>
-        <td>{{ company_user.contact }}</td>
-      </tr>
-      <tr>
-        <th>Phone Number:</th>
-        <td>{{ company_user.phone_number }}</td>
-      </tr>
-      <tr>
-        <th>Email 1:</th>
-        <td>{{ company_user.email1 }}</td>
-      </tr>
-      <tr>
-        <th>Email 2:</th>
-        <td>{{ company_user.email2 }}</td>
-      </tr>
-      <tr>
-        <th>Date of Subscription:</th>
-        <td>{{ company_user.date_of_subscription }}</td>
-      </tr>
-      <tr>
-        <th>End of Subscription:</th>
-        <td>{{ company_user.end_of_subscription }}</td>
-      </tr>
-      <tr>
-        <th>Subscription:</th>
-        <td>
-          {% if company_user.is_subscription_valid %}
-            <span class="badge bg-success">Valid</span>
-          {% else %}
-            <span class="badge bg-danger">Expired</span>
-          {% endif %}
-        </td>
-      </tr>
-      <tr>
-        <th>Status:</th>
-        <td>
-          {% if company_user.is_active %}
-            <span class="badge bg-success">Active</span>
-          {% else %}
-            <span class="badge bg-danger">Inactive</span>
-          {% endif %}
-        </td>
-      </tr>
-      <tr>
-        <th>Software:</th>
-        <td>
-          {% if company_user.software %}
-            <span>{{ company_user.software.name }} ({{ company_user.software.get_category_display }}, {{ company_user.software.get_type_display }})</span>
-          {% else %}
-            <span>No software listed</span>
-          {% endif %}
-        </td>
-    </tr>
+
+    <div class="table-responsive">
+      <table class="table table-borderless">
+        <tr>
+          <th>Company Name:</th>
+          <td>{{ company_user.customer_name }}</td>
+        </tr>
+        <tr>
+          <tr>
+            <th>Customer Account:</th>
+            <td>{{ company_user.customer_account }}</td>
+          </tr>
+          <tr>
+            <tr>
+              <th>Base Serial Number:</th>
+              <td>{{ company_user.base_serial_number }}</td>
+            </tr>
+            <tr>
+
+          <th>Contact:</th>
+          <td>{{ company_user.contact }}</td>
+        </tr>
+        <tr>
+          <th>Phone Number:</th>
+          <td>{{ company_user.phone_number }}</td>
+        </tr>
+        <tr>
+          <th>Email 1:</th>
+          <td>{{ company_user.email1 }}</td>
+        </tr>
+        <tr>
+          <th>Email 2:</th>
+          <td>{{ company_user.email2 }}</td>
+        </tr>
+        <tr>
+          <th>Date of Subscription:</th>
+          <td>{{ company_user.date_of_subscription }}</td>
+        </tr>
+        <tr>
+          <th>End of Subscription:</th>
+          <td>{{ company_user.end_of_subscription }}</td>
+        </tr>
+        <tr>
+          <th>Subscription:</th>
+          <td>
+            {% if company_user.subscription_valid %}
+              <span class="badge bg-success">Valid</span>
+            {% else %}
+              <span class="badge bg-danger">Expired</span>
+            {% endif %}
+          </td>
+        </tr>
+        <tr>
+          <th>Status:</th>
+          <td>
+            {% if company_user.is_active %}
+              <span class="badge bg-success">Active</span>
+            {% else %}
+              <span class="badge bg-danger">Inactive</span>
+            {% endif %}
+          </td>
+        </tr>
+        <tr>
+          <th>Software:</th>
+          <td>
+            {% if company_user.software %}
+              {{ company_user.software.name }}
+            {% else %}
+              No software assigned
+            {% endif %}
+          </td>
+        </tr>
+        <tr>
+          <th>Software Edition:</th>
+          <td>
+            {% if company_user.software and company_user.software_edition %}
+              {{ company_user.software_edition }}
+            {% else %}
+              No edition selected
+            {% endif %}
+          </td>
+        </tr>
+        <tr>
+          <th>Software Version:</th>
+          <td>
+            {% if company_user.software and company_user.software_version %}
+              {{ company_user.software_version }}
+            {% else %}
+              No version selected
+            {% endif %}
+          </td>
+        </tr>
+        <tr>
+          <th>Add-ons:</th>
+          <td>
+            {% if company_user.software_addons.all %}
+              {% for addon in company_user.software_addons.all %}
+                {{ addon.name }}{% if not forloop.last %}, {% endif %}
+              {% endfor %}
+            {% else %}
+              No addons selected
+            {% endif %}
+          </td>
+        </tr>
+        
+        
+      </table>
+    </div>
     
-    </table>
     <a href="{% url 'company_user_list' %}" class="btn btn-primary-custom2">Back to List</a>
     <a href="{% url 'update_company_user' company_user.pk %}" class="btn btn-primary-custom2">Edit Details</a>
-
   </div>
 </section>
 {% endblock %}

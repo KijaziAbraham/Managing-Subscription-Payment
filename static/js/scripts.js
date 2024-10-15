@@ -1,10 +1,14 @@
 document.addEventListener("DOMContentLoaded", function () {
-  
-/*--------------------------------------------------------------
-# Form validation
---------------------------------------------------------------*/
-  const forms = document.querySelectorAll("form");
-  forms.forEach(form => {
+  // Helper functions
+  const select = (el, all = false) => all ? [...document.querySelectorAll(el.trim())] : document.querySelector(el.trim());
+  const on = (type, el, listener, all = false) => {
+    const elements = select(el, all);
+    elements.forEach(e => e.addEventListener(type, listener));
+  };
+  const onscroll = (el, listener) => el.addEventListener('scroll', listener);
+
+  // Form validation
+  document.querySelectorAll("form").forEach(form => {
     form.addEventListener("submit", function (event) {
       const inputs = form.querySelectorAll("input[required]");
       let valid = true;
@@ -23,373 +27,140 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   });
 
-/*--------------------------------------------------------------
-# Back to top button functionality 
---------------------------------------------------------------*/
-  
-  const backToTop = document.querySelector('.back-to-top');
+  // Back to top button functionality
+  const backToTop = select('.back-to-top');
   if (backToTop) {
-    window.addEventListener('scroll', () => {
-      if (window.scrollY > 100) {
-        backToTop.classList.add('active');
-      } else {
-        backToTop.classList.remove('active');
-      }
-    });
-  }
-  let backtotop = select('.back-to-top')
-  if (backtotop) {
-    const toggleBacktotop = () => {
-      if (window.scrollY > 100) {
-        backtotop.classList.add('active')
-      } else {
-        backtotop.classList.remove('active')
-      }
-    }
-    window.addEventListener('load', toggleBacktotop)
-    onscroll(document, toggleBacktotop)
+    const toggleBacktotop = () => window.scrollY > 100 ? backToTop.classList.add('active') : backToTop.classList.remove('active');
+    window.addEventListener('load', toggleBacktotop);
+    onscroll(document, toggleBacktotop);
   }
 
-/*--------------------------------------------------------------
-# Alert Timeout
---------------------------------------------------------------*/
+  // Alert Timeout
   document.querySelectorAll('.alert').forEach(alert => {
-    setTimeout(() => {
-      alert.style.display = 'none';
-    }, 3000);
+    setTimeout(() => alert.style.display = 'none', 3000);
   });
 
-
-
-/*--------------------------------------------------------------
-# side bar nav function
---------------------------------------------------------------*/
-  const select = (el, all = false) => {
-    el = el.trim();
-    return all ? [...document.querySelectorAll(el)] : document.querySelector(el);
-  };
-
-  const on = (type, el, listener, all = false) => {
-    const elements = select(el, all);
-    elements.forEach(e => e.addEventListener(type, listener));
-  };
-
-  const onscroll = (el, listener) => {
-    el.addEventListener('scroll', listener);
-  };
-
-/*--------------------------------------------------------------
-# toggle side bar
---------------------------------------------------------------*/
-  if (select('.toggle-sidebar-btn')) {
-    on('click', '.toggle-sidebar-btn', () => {
-      document.body.classList.toggle('toggle-sidebar');
-    });
-  }
-  if (select('.toggle-sidebar-btn')) {
-    on('click', '.toggle-sidebar-btn', function(e) {
-      select('body').classList.toggle('toggle-sidebar')
-    })
-  }
-
-/*--------------------------------------------------------------
-# search bar toogle
---------------------------------------------------------------*/
-  if (select('.search-bar-toggle')) {
-    on('click', '.search-bar-toggle', () => {
-      select('.search-bar').classList.toggle('search-bar-show');
-    });
-  }
-  if (select('.search-bar-toggle')) {
-    on('click', '.search-bar-toggle', function(e) {
-      select('.search-bar').classList.toggle('search-bar-show')
-    })
-  }
-/*--------------------------------------------------------------
-#   Navbar Links Active State on Scroll 
---------------------------------------------------------------*/
- 
-  let navbarlinks = select('#navbar .scrollto', true);
+  // Navbar Links Active State on Scroll
+  const navbarlinks = select('#navbar .scrollto', true);
   const navbarlinksActive = () => {
-    let position = window.scrollY + 200;
+    const position = window.scrollY + 200;
     navbarlinks.forEach(navbarlink => {
-      if (!navbarlink.hash) return;
-      let section = select(navbarlink.hash);
+      const section = select(navbarlink.hash);
       if (!section) return;
-      if (position >= section.offsetTop && position <= (section.offsetTop + section.offsetHeight)) {
-        navbarlink.classList.add('active');
-      } else {
-        navbarlink.classList.remove('active');
-      }
+      position >= section.offsetTop && position <= (section.offsetTop + section.offsetHeight)
+        ? navbarlink.classList.add('active')
+        : navbarlink.classList.remove('active');
     });
   };
   window.addEventListener('load', navbarlinksActive);
   onscroll(document, navbarlinksActive);
 
-/*--------------------------------------------------------------
-# Header scroll bar class
---------------------------------------------------------------*/
-  let selectHeader = select('#header');
-  if (selectHeader) {
-    const headerScrolled = () => {
-      if (window.scrollY > 100) {
-        selectHeader.classList.add('header-scrolled');
-      } else {
-        selectHeader.classList.remove('header-scrolled');
-      }
-    };
-    window.addEventListener('load', headerScrolled);
-    onscroll(document, headerScrolled);
-  }
+  // Initialize Bootstrap Tooltips
+  const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+  tooltipTriggerList.map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
 
-/*--------------------------------------------------------------
-# initialize tooltp
---------------------------------------------------------------*/
-  var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-  var tooltipList = tooltipTriggerList.map(function(tooltipTriggerEl) {
-    return new bootstrap.Tooltip(tooltipTriggerEl);
+
+  
+
+  // Initiate Bootstrap Validation Check
+  document.querySelectorAll('.needs-validation').forEach(form => {
+    form.addEventListener('submit', function (event) {
+      if (!form.checkValidity()) {
+        event.preventDefault();
+        event.stopPropagation();
+      }
+      form.classList.add('was-validated');
+    }, false);
   });
 
-  var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
-  var tooltipList = tooltipTriggerList.map(function(tooltipTriggerEl) {
-    return new bootstrap.Tooltip(tooltipTriggerEl)
-  })
+  // Initiate Datatables
+   select('.datatable', true).forEach(datatable => new simpleDatatables.DataTable(datatable));
 
-/*--------------------------------------------------------------
-# initialize Quill
---------------------------------------------------------------*/
-  const quillOptions = {
-    theme: 'snow'
+
+  // Toggle Active/Inactive Status
+  window.toggleActive = function(userId) {
+    var form = document.getElementById('toggle-status-form-' + userId);
+    var button = form.querySelector('button');
+    var isActive = button.classList.contains('btn-toggle-active');
+
+    // Change the button text and class based on the current state
+    button.classList.toggle('btn-toggle-active', !isActive);
+    button.classList.toggle('btn-toggle-inactive', isActive);
+    button.textContent = isActive ? 'Inactive' : 'Active';
+
+    // Optionally, you could submit the form here if needed
+    form.submit();
+  }
+
+  // Initialize DataTables
+ /* $(document).ready(function() {
+    $('.datatable').DataTable({
+      "pageLength": 10, // Default number of rows per page
+      "lengthMenu": [5, 10, 25, 50, 100], // Options for rows per page
+      "order": [[0, 'asc']], // Default sorting on the first column
+      "language": {
+        "search": "Search:", // Label for the search input
+        "lengthMenu": "Show _MENU_ entries", // Label for the page length menu
+        "info": "Showing _START_ to _END_ of _TOTAL_ entries", // Info text
+        "infoEmpty": "No entries available", // Info text when there are no entries
+        "infoFiltered": "(filtered from _MAX_ total entries)" // Info text for filtering
+      }
+    });
+  });
+*/
+
+
+});
+
+
+document.addEventListener('DOMContentLoaded', function() {
+  const closeSidebarBtn = document.getElementById('close-sidebar');
+  const toggleSidebarBtn = document.querySelector('.toggle-sidebar-btn');
+  const sidebar = document.querySelector('.sidebar');
+  const mainContent = document.querySelector('#main');
+  const footer = document.querySelector('.footer');
+
+  // Helper function to toggle sidebar visibility
+  const toggleSidebar = () => {
+      sidebar.classList.toggle('toggle-sidebar');
+      mainContent.classList.toggle('toggle-sidebar');
+      footer.classList.toggle('toggle-sidebar');
   };
-  if (select('.quill-editor-default')) new Quill('.quill-editor-default', quillOptions);
-  if (select('.quill-editor-bubble')) quillOptions.theme = 'bubble', new Quill('.quill-editor-bubble', quillOptions);
-  if (select('.quill-editor-full')) {
-    new Quill(".quill-editor-full", {
-      modules: {
-        toolbar: [
-          [{ font: [] }, { size: [] }],
-          ["bold", "italic", "underline", "strike"],
-          [{ color: [] }, { background: [] }],
-          [{ script: "super" }, { script: "sub" }],
-          [{ list: "ordered" }, { list: "bullet" }, { indent: "-1" }, { indent: "+1" }],
-          ["direction", { align: [] }],
-          ["link", "image", "video"],
-          ["clean"]
-        ]
-      },
-      theme: "snow"
-    });
-  }
-/*--------------------------------------------------------------
-#  TinyMCE Editor 
---------------------------------------------------------------*/
-  
-  const useDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
-  tinymce.init({
-    selector: 'textarea.tinymce-editor',
-    plugins: 'preview paste importcss searchreplace autolink autosave save directionality code visualblocks visualchars fullscreen image link media template codesample table charmap hr pagebreak nonbreaking anchor toc insertdatetime advlist lists wordcount imagetools textpattern noneditable help charmap quickbars emoticons',
-    menubar: 'file edit view insert format tools table help',
-    toolbar: 'undo redo | bold italic underline strikethrough | fontselect fontsizeselect formatselect | alignleft aligncenter alignright alignjustify | outdent indent |  numlist bullist | forecolor backcolor removeformat | pagebreak | charmap emoticons | fullscreen  preview save print | insertfile image media template link anchor codesample | ltr rtl',
-    toolbar_sticky: true,
-    autosave_ask_before_unload: true,
-    autosave_interval: '30s',
-    autosave_prefix: '{path}{query}-{id}-',
-    autosave_restore_when_empty: false,
-    autosave_retention: '2m',
-    image_advtab: true,
-    link_list: [
-      { title: 'My page 1', value: 'https://www.tiny.cloud' },
-      { title: 'My page 2', value: 'http://www.moxiecode.com' }
-    ],
-    image_list: [
-      { title: 'My page 1', value: 'https://www.tiny.cloud' },
-      { title: 'My page 2', value: 'http://www.moxiecode.com' }
-    ],
-    image_class_list: [
-      { title: 'None', value: '' },
-      { title: 'Some class', value: 'class-name' }
-    ],
-    importcss_append: true,
-    height: 400,
-    file_picker_callback: (callback, value, meta) => {
-      /* Provide file and text for the link dialog */
-      if (meta.filetype === 'file') {
-        callback('https://www.google.com/logos/google.jpg', { text: 'My text' });
+
+  // Toggle sidebar on button click
+  toggleSidebarBtn.addEventListener('click', toggleSidebar);
+  closeSidebarBtn.addEventListener('click', toggleSidebar);
+
+  // Close sidebar when clicking outside
+  document.addEventListener('click', function(event) {
+      if (!sidebar.contains(event.target) && !toggleSidebarBtn.contains(event.target) && sidebar.classList.contains('toggle-sidebar')) {
+          toggleSidebar();
       }
-
-      /* Provide image and alt text for the image dialog */
-      if (meta.filetype === 'image') {
-        callback('https://www.google.com/logos/google.jpg', { alt: 'My alt text' });
-      }
-
-      /* Provide alternative source and posted for the media dialog */
-      if (meta.filetype === 'media') {
-        callback('movie.mp4', { source2: 'alt.ogg', poster: 'https://www.google.com/logos/google.jpg' });
-      }
-    },
-    templates: [
-      { title: 'New Table', description: 'creates a new table', content: '<div class="mceTmpl"><table width="100%" border="0" cellspacing="0" cellpadding="0"><tr><td> <p>Your content here</p></td></tr></table></div>' },
-      { title: 'Starting my story', description: 'A cure for writers block', content: 'Once upon a time...' },
-      { title: 'New list with dates', description: 'New List with dates', content: '<div class="mceTmpl"><table width="100%" border="0" cellspacing="0" cellpadding="0"><tr><td> <p>Your content here</p></td></tr></table></div>' }
-    ],
-    template_cdate_format: '[Date Created (CDATE): %m/%d/%Y : %H:%M:%S]',
-    template_mdate_format: '[Date Modified (MDATE): %m/%d/%Y : %H:%M:%S]',
-    height: 600,
-    image_caption: true,
-    quickbars_selection_toolbar: 'bold italic | quicklink h2 h3 blockquote quickimage quicktable',
-    noneditable_noneditable_class: 'mceNonEditable',
-    toolbar_mode: 'sliding',
-    contextmenu: 'link image imagetools table',
-    skin: useDarkMode ? 'oxide-dark' : 'oxide',
-    content_css: useDarkMode ? 'dark' : 'default',
-    content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }'
-  });
-});
-
-
-
-document.addEventListener("DOMContentLoaded", function() {
-  const navLinks = document.querySelectorAll('.nav-pills .nav-link');
-
-  navLinks.forEach(link => {
-    link.addEventListener('click', function() {
-      navLinks.forEach(nav => nav.classList.remove('active'));
-      this.classList.add('active');
-    });
-  });
-});
-
-
-
-
-
-(function() {
-  "use strict";
-
-/**...................................
-   * Easy selector helper function
-......................................*/
-  const select = (el, all = false) => {
-    el = el.trim()
-    if (all) {
-      return [...document.querySelectorAll(el)]
-    } else {
-      return document.querySelector(el)
-    }
-  }
-
-  /**..........................................
-   * Easy event listener function
-   ............................................*/
-  const on = (type, el, listener, all = false) => {
-    if (all) {
-      select(el, all).forEach(e => e.addEventListener(type, listener))
-    } else {
-      select(el, all).addEventListener(type, listener)
-    }
-  }
-
-  /**........................................................
-   * Easy on scroll event listener 
-  ........................................................ */
-  const onscroll = (el, listener) => {
-    el.addEventListener('scroll', listener)
-  }
-
-  
-  /**
-   * Navbar links active state on scroll
-   */
-  let navbarlinks = select('#navbar .scrollto', true)
-  const navbarlinksActive = () => {
-    let position = window.scrollY + 200
-    navbarlinks.forEach(navbarlink => {
-      if (!navbarlink.hash) return
-      let section = select(navbarlink.hash)
-      if (!section) return
-      if (position >= section.offsetTop && position <= (section.offsetTop + section.offsetHeight)) {
-        navbarlink.classList.add('active')
-      } else {
-        navbarlink.classList.remove('active')
-      }
-    })
-  }
-  window.addEventListener('load', navbarlinksActive)
-  onscroll(document, navbarlinksActive)
-
-  /*******************************************************************
-   * Toggle .header-scrolled class to #header when page is scrolled
-  *****************************************************************/
-  let selectHeader = select('#header')
-  if (selectHeader) {
-    const headerScrolled = () => {
-      if (window.scrollY > 100) {
-        selectHeader.classList.add('header-scrolled')
-      } else {
-        selectHeader.classList.remove('header-scrolled')
-      }
-    }
-    window.addEventListener('load', headerScrolled)
-    onscroll(document, headerScrolled)
-  }
-
-  
-
-   /*--------------------------------------------------------------
-#  Initiate Bootstrap validation check
---------------------------------------------------------------*/
- 
-  var needsValidation = document.querySelectorAll('.needs-validation')
-
-  Array.prototype.slice.call(needsValidation)
-    .forEach(function(form) {
-      form.addEventListener('submit', function(event) {
-        if (!form.checkValidity()) {
-          event.preventDefault()
-          event.stopPropagation()
-        }
-
-        form.classList.add('was-validated')
-      }, false)
-    })
-/*--------------------------------------------------------------
-#  Initiate Datatables
---------------------------------------------------------------*/
- 
-  const datatables = select('.datatable', true)
-  datatables.forEach(datatable => {
-    new simpleDatatables.DataTable(datatable);
   })
-
-  
-
-})();
+});
 
 
-/*----------------------------------------
-JavaScript for form validation and modal --
--------------------------------------------*/
+  // Update the current date in the required format
+  function updateDate() {
+    const now = new Date();
+    const options = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
+    const dateString = now.toLocaleDateString('en-GB', options).split(' ');
+    const dayNumber = parseInt(dateString[1], 10);
+    const daySuffix = ['st', 'nd', 'rd'][((dayNumber + 90) % 100 - 10) % 10 - 1] || 'th';
+    const formattedDate = `${dateString[0]}&nbsp;${dayNumber}<sup>${daySuffix}</sup>&nbsp;of&nbsp;${dateString[2]},&nbsp;${dateString[3]}`;
 
-  // Wait for the document to be fully loaded
-  document.addEventListener('DOMContentLoaded', function() {
-    const termsCheckbox = document.getElementById('terms');
-    const privacyPolicyLink = document.getElementById('privacyPolicyLink');
-    const privacyPolicyModal = new bootstrap.Modal(document.getElementById('privacyPolicyModal'));
+    document.getElementById('current-date').innerHTML = formattedDate;
+}
+updateDate();
 
-    // Prevent form submission if terms checkbox is not checked
-    const form = document.querySelector('form');
-    form.addEventListener('submit', function(event) {
-      if (!termsCheckbox.checked) {
-        event.preventDefault(); // Prevent form submission
-        alert('You must accept the terms and conditions to proceed.');
-      }
-    });
 
-    // Show privacy policy modal on link click
-    privacyPolicyLink.addEventListener('click', function(event) {
-      event.preventDefault(); // Prevent link navigation
-      privacyPolicyModal.show(); // Show the privacy policy modal
-    });
-  });
-
- 
+// Calculate end date based on date of subscription and duration
+$('#id_date_of_subscription, #id_subscription_duration').change(function() {
+  var subscriptionDate = $('#id_date_of_subscription').val();
+  var duration = $('#id_subscription_duration').val();
+  if (subscriptionDate && duration) {
+      var startDate = new Date(subscriptionDate);
+      startDate.setMonth(startDate.getMonth() + parseInt(duration));
+      document.getElementById('end_of_subscription').value = startDate.toISOString().split('T')[0]; // Format to YYYY-MM-DD
+  }
+});
