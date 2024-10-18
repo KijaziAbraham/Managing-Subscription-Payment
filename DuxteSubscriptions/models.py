@@ -12,6 +12,8 @@ from django.core.exceptions import ValidationError
 import re
 
 def validate_phone_number(phone_number):
+    phone_number = phone_number.strip()
+
     # Strip all non-digit characters (including +, spaces, etc.)
     digits_only = re.sub(r'\D', '', phone_number)
 
@@ -149,7 +151,7 @@ class AuditLog(models.Model):
         ('RESTORE', 'Restore'), ('IMPORT', 'Import'),
     ]
 
-    action = models.CharField(max_length=10, choices=ACTION_CHOICES)
+    action = models.CharField(max_length=600, choices=ACTION_CHOICES)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     company_user = models.ForeignKey(CompanyUser, on_delete=models.SET_NULL, null=True, blank=True)
     software = models.ForeignKey(Software, on_delete=models.SET_NULL, null=True, blank=True)  # Added for software actions

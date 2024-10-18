@@ -70,13 +70,23 @@ def login_view(request):
             if user is not None:
                 auth_login(request, user)
 
-                # Check for existing company users and software
                 if CompanyUser.objects.exists():
                     return redirect('dashboard')
-                elif Software.objects.exists():
-                    return redirect('create_company_user')
+                
+                elif not SoftwareCategory.objects.exists():
+                    return redirect('add_software_category') 
+                
+                elif not SoftwareEdition.objects.exists():
+                    return redirect('add_software_edition') 
+                
+                elif not SoftwareVersion.objects.exists():
+                    return redirect('add_software_version')  
+                
+                elif not Addon.objects.exists():
+                    return redirect('create_addon') 
+                
                 else:
-                    return redirect('add_software')
+                    return redirect('create_company_user')  
             else:
                 messages.error(request, 'Invalid username or password.')
         else:
@@ -961,8 +971,19 @@ def import_template_view(request):
     return render(request, 'DuxteSubscriptions/import_template.html')
 
 def validate_phone_number(phone_number):
+    # Strip leading and trailing spaces
+    phone_number = phone_number.strip()
+    
+    # Remove leading '+' if present
+    if phone_number.startswith('+'):
+        phone_number = phone_number[1:]
+        
+    # Remove all non-digit characters (including spaces)
     digits_only = re.sub(r'\D', '', phone_number)
+    
+    # Check if the length of digits is between 10 and 16
     return 10 <= len(digits_only) <= 16
+
 
 def parse_date(date_str):
     date_formats = ["%Y-%m-%d", "%d/%m/%Y", "%m/%d/%Y"]
@@ -1019,34 +1040,31 @@ def import_users(request):
         if form.is_valid():
             file = request.FILES['file']
             try:
-                df = pd.read_excel(file, dtype=str)  
+                df = pd.read_excel(file, dtype=str)
                 df = df.fillna('')  
             except Exception as e:
                 messages.error(request, f"Error reading Excel file: {str(e)}")
                 return redirect('import_users')
-
-
-
 
         # Step 1: Validating rows
             for index, row in df.iterrows():
                 row_errors = []
                 software, edition, version, row_errors = validate_software_row(row, row_errors)
 
-                subscription_duration = int(row[9]) if row[9].isdigit() else None
+                subscription_duration = int(row.iloc[9]) if row.iloc[9].isdigit() else None
                 if subscription_duration is None or not (1 <= subscription_duration <= 12):
                     row_errors.append("Subscription duration must be between 1 and 12 months.")
 
-                phone_number = row[4]
+                phone_number = row.iloc[4]
                 if not validate_phone_number(phone_number):
                     row_errors.append("Phone number must contain between 10 and 16 digits.")
 
-                date_of_registration = parse_date(row[7])
-                date_of_subscription = parse_date(row[8])
+                date_of_registration = parse_date(row.iloc[7])
+                date_of_subscription = parse_date(row.iloc[8])
                 if not date_of_registration:
-                    row_errors.append(f"Invalid date of registration: '{row[7]}'")
+                    row_errors.append(f"Invalid date of registration: '{row.iloc[7]}'")
                 if not date_of_subscription:
-                    row_errors.append(f"Invalid date of subscription: '{row[8]}'")
+                    row_errors.append(f"Invalid date of subscription: '{row.iloc[8]}'")
 
                 if date_of_registration and date_of_subscription and date_of_registration > date_of_subscription:
                     row_errors.append("Date of registration cannot be after the date of subscription.")
@@ -1054,26 +1072,26 @@ def import_users(request):
                 if row_errors:
                     errors.append(f"Row {index + 2}: {', '.join(row_errors)}")
 
-          # Step 2: Saving data if no errors
+        # Step 2: Saving data if no errors
             if not errors:
                 try:
                     with transaction.atomic():
                         for index, row in df.iterrows():
                             try:
                                 software, edition, version, _ = validate_software_row(row, [])
-                                addons = Addon.objects.filter(name__in=[addon.strip() for addon in row[14].split(",") if addon.strip()])
+                                addons = Addon.objects.filter(name__in=[addon.strip() for addon in row.iloc[14].split(",") if addon.strip()])
                                 company_user = CompanyUser(
-                                    customer_name=row[0],
-                                    customer_account=row[1],
-                                    base_serial_number=row[2],
-                                    contact=row[3],
-                                    phone_number=row[4],
-                                    email1=row[5],
-                                    email2=row[6] if row[6] else None,
-                                    date_of_registration=parse_date(row[7]),
-                                    date_of_subscription=parse_date(row[8]),
+                                    customer_name=row.iloc[0],
+                                    customer_account=row.iloc[1],
+                                    base_serial_number=row.iloc[2],
+                                    contact=row.iloc[3],
+                                    phone_number=row.iloc[4],
+                                    email1=row.iloc[5],
+                                    email2=row.iloc[6] if row.iloc[6] else None,
+                                    date_of_registration=parse_date(row.iloc[7]),
+                                    date_of_subscription=parse_date(row.iloc[8]),
                                     subscription_duration=subscription_duration,
-                                    is_active=row[10],
+                                    is_active=row.iloc[10],
                                     software=software,
                                     software_edition=edition,
                                     software_version=version,
@@ -1107,27 +1125,29 @@ def import_users(request):
 
     return render(request, 'DuxteSubscriptions/import_company.html', {'form': form, 'errors': errors})
 
+
 # Helper function to fetch and validate software data and Importation
 def validate_software_row(row, row_errors):
     try:
-        software = Software.objects.get(name__iexact=row[11].strip().lower())
+        software = Software.objects.get(name__iexact=row.iloc[11].strip().lower())
     except Software.DoesNotExist:
-        row_errors.append(f"Software '{row[11]}' does not exist.")
+        row_errors.append(f"Software '{row.iloc[11]}' does not exist.")
         software = None
 
     try:
-        edition = SoftwareEdition.objects.get(name__iexact=row[12].strip().lower())
+        edition = SoftwareEdition.objects.get(name__iexact=row.iloc[12].strip().lower())
     except SoftwareEdition.DoesNotExist:
-        row_errors.append(f"Edition '{row[12]}' does not exist.")
+        row_errors.append(f"Edition '{row.iloc[12]}' does not exist.")
         edition = None
 
     try:
-        version = SoftwareVersion.objects.get(name__iexact=row[13].strip().lower())
+        version = SoftwareVersion.objects.get(name__iexact=row.iloc[13].strip().lower())
     except SoftwareVersion.DoesNotExist:
-        row_errors.append(f"Version '{row[13]}' does not exist.")
+        row_errors.append(f"Version '{row.iloc[13]}' does not exist.")
         version = None
 
     return software, edition, version, row_errors
+
 
 def log_import_success(user, imported_count):
     AuditLog.objects.create(
@@ -1136,12 +1156,14 @@ def log_import_success(user, imported_count):
         details=f"Imported {imported_count} users on {timezone.now().strftime('%Y-%m-%d %H:%M:%S')}."
     )
 
+
 def log_import_failure(user, error_details):
     AuditLog.objects.create(
         action='IMPORT FAILED',
         user=user,
         details=f"Import failed on {timezone.now().strftime('%Y-%m-%d %H:%M:%S')}: {error_details}."
     )
+
 
 def download_software_template(request):
     columns = ['name', 'category', 'editions (comma separated)', 'versions (comma separated)', 'addons (comma separated)']

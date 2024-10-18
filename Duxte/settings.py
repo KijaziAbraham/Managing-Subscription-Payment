@@ -10,6 +10,9 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
+import pymysql
+pymysql.install_as_MySQLdb()
+
 from pathlib import Path
 import os
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -25,7 +28,7 @@ SECRET_KEY = 'django-insecure-m%j9u&0f$1oiu#1e3dhiz(z(dc^vf!e@e8=rll5+6p$wx6tuhx
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['192.168.0.136']
+ALLOWED_HOSTS = ['192.168.0.136', 'localhost', '127.0.0.1']
 
 
 # Application definition
@@ -82,9 +85,14 @@ WSGI_APPLICATION = 'Duxte.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'DuxteSubscriptions',
+        'USER': 'kijazi',
+        'PASSWORD': 'saraPHIN@12',
+        'HOST': 'localhost',
+        'PORT': '3306',
+        
+        }
 }
 
 
