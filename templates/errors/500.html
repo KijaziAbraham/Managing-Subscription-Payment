@@ -1,0 +1,29 @@
+{% extends "base_errors.html" %}
+{% load static %}
+
+{% block extend_head %}
+<title>Duxte | 500 Server Error</title>
+<style>
+    body {
+        background-color: #f9f9f9; 
+        color: #333; 
+    }
+    .error-title {
+        color: #31B136; 
+        font-size: 3rem; 
+    }
+    .lead {
+        color: #31B136; 
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="ftco-section">
+  <div class="container text-center">
+    <h1 class="display-4 error-title">500: Internal Server Error</h1>
+    <p class="lead">Something went wrong on our end.</p>
+    <p>We're working to fix it! Please try again later.</p>
+  </div>
+</section>
+{% endblock %}

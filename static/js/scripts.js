@@ -164,3 +164,42 @@ $('#id_date_of_subscription, #id_subscription_duration').change(function() {
       document.getElementById('end_of_subscription').value = startDate.toISOString().split('T')[0]; // Format to YYYY-MM-DD
   }
 });
+document.addEventListener('DOMContentLoaded', function () {
+  const currentURL = window.location.href;
+
+  // Function to highlight the active link and expand its parent menu
+  function highlightActiveLink() {
+    const navLinks = document.querySelectorAll('.sidebar-nav a');
+    navLinks.forEach(link => {
+      if (currentURL.includes(link.href)) {
+        link.classList.add('active'); // Highlight the active link
+
+        // If the link is inside a collapsible menu, expand the parent menu
+        const parentMenu = link.closest('.nav-content.collapse');
+        if (parentMenu) {
+          parentMenu.classList.add('show'); // Expand the parent menu
+          const parentLink = parentMenu.previousElementSibling;
+          if (parentLink) {
+            parentLink.classList.remove('collapsed'); // Remove the collapsed state
+          }
+        }
+      } else {
+        link.classList.remove('active'); // Remove active state from other links
+      }
+    });
+  }
+
+  // Call the function to highlight the active link
+  highlightActiveLink();
+
+  // Handle submenu expansion on click
+  document.querySelectorAll('.nav-link.collapsed').forEach(item => {
+    item.addEventListener('click', function () {
+      const targetCollapse = this.nextElementSibling;
+      if (targetCollapse && targetCollapse.classList.contains('collapse')) {
+        targetCollapse.classList.toggle('show');
+        this.classList.toggle('collapsed');
+      }
+    });
+  });
+});

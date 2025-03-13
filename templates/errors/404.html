@@ -1,0 +1,29 @@
+{% extends "base_errors.html" %}
+{% load static %}
+
+{% block extend_head %}
+<title>Duxte | 404 Page Not Found</title>
+<style>
+    body {
+        background-color: #f9f9f9;
+        color: #333; 
+    }
+    .error-title {
+        color: #31B136; 
+        font-size: 3rem; 
+    }
+    .lead {
+        color: #31B136; 
+    }
+    
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="ftco-section">
+  <div class="container text-center">
+    <h1 class="display-4 error-title">404: Oops! Page not found.</h1>
+    <p class="lead">It looks like the page you are trying to access doesn't exist.</p>
+  </div>
+</section>
+{% endblock %}

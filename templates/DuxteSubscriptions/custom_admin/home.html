@@ -1,0 +1,10 @@
+<!-- DuxteSubscriptions/templates/DuxteSubscriptions/custom_admin/home.html -->
+{% extends "main.html" %}
+
+{% block content %}
+<h1>Custom Admin Panel</h1>
+<ul>
+     <li><a href="{% url 'create_user' %}">Create User</a></li>
+    <li><a href="{% url 'user_list' %}">User List</a></li>
+</ul>
+{% endblock %}

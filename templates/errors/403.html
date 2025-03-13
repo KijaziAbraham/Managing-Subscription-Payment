@@ -1,0 +1,30 @@
+{% extends "base_auth.html" %}
+{% load static %}
+
+{% block extend_head %}
+<title>Duxte | 403 Forbidden</title>
+<style>
+    body {
+        background-color: #f9f9f9; 
+        color: #333; 
+    }
+    .error-title {
+        color: #31B136; 
+        font-size: 3rem; 
+    }
+    .lead {
+        color: #31B136; 
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="ftco-section">
+  <div class="container text-center">
+    <h1 class="display-4">403: Forbidden</h1>
+    <p class="lead">You don't have permission to access this page.</p>
+     </div>
+</section>
+{% endblock %}
+
+

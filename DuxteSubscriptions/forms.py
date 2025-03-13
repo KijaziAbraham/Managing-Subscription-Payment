@@ -2,8 +2,72 @@ from .models import CompanyUser, Software, SoftwareCategory, SoftwareEdition, So
 from django.contrib.auth.forms import PasswordChangeForm
 from django import forms
 from django import forms
+from django.contrib.auth.models import User
+from django.contrib.auth.forms import UserCreationForm
+ 
+class CustomUserCreationForm(UserCreationForm):
+    categories = forms.ModelMultipleChoiceField(
+        queryset=SoftwareCategory.objects.all(),
+        widget=forms.CheckboxSelectMultiple,
+        required=False
+    )
 
+    class Meta:
+        model = User
+        fields = ['username', 'password1', 'password2', 'categories']
 
+    def __init__(self, *args, **kwargs):
+        self.is_edit = kwargs.pop('is_edit', False)  # Add a flag to check if it's an edit form
+        super().__init__(*args, **kwargs)
+
+        # If it's an edit form, make username and password fields optional
+        if self.is_edit:
+            self.fields['username'].required = False
+            self.fields['password1'].required = True
+            self.fields['password2'].required = True
+
+    def clean_username(self):
+        username = self.cleaned_data.get('username')
+
+        # If it's an edit form and username is left blank, return the existing username
+        if self.is_edit and not username:
+            return self.instance.username
+
+        # Check for duplicate usernames, excluding the current user during editing
+        if self.is_edit:
+            existing_user = User.objects.filter(username=username).exclude(pk=self.instance.pk).first()
+        else:
+            existing_user = User.objects.filter(username=username).first()
+
+        if existing_user:
+            raise forms.ValidationError("A user with that username already exists.")
+
+        return username
+
+    def clean_password2(self):
+        # Ensure password fields are filled during editing
+        if self.is_edit and not self.cleaned_data.get('password1') and not self.cleaned_data.get('password2'):
+            raise forms.ValidationError("Password fields are required during editing.")
+        return super().clean_password2()
+
+    def save(self, commit=True):
+        user = super().save(commit=False)
+
+        # Only update password if it's provided
+        if self.cleaned_data.get('password1'):
+            user.set_password(self.cleaned_data['password1'])
+
+        if commit:
+            user.save()
+
+            # Clear existing categories and assign new ones
+            UserCategory.objects.filter(user=user).delete()  # Clear existing categories
+            categories = self.cleaned_data['categories']
+            for category in categories:
+                UserCategory.objects.create(user=user, category=category)  # Assign new categories
+
+        return user
+    
 class CompanyUserForm(forms.ModelForm):
 
     software_addons = forms.ModelMultipleChoiceField(

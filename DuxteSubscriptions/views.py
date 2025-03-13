@@ -55,6 +55,8 @@ import openpyxl
 import pandas as pd
 import io
 import re
+from .forms import CustomUserCreationForm
+from .models import User, UserCategory
 
 
 
@@ -103,6 +105,82 @@ def login_view(request):
 def logout_view(request):
     auth_logout(request)
     return redirect('login')
+
+@login_required
+@user_passes_test(lambda u: u.is_superuser)
+def create_user(request):
+    available_categories = SoftwareCategory.objects.all()  # Fetch all categories
+
+    if request.method == 'POST':
+        form = CustomUserCreationForm(request.POST)
+        if form.is_valid():
+            # Save the user first
+            user = form.save()  # Save the user to the database
+
+            # Assign selected categories to the user
+            categories = form.cleaned_data['categories']
+            for category in categories:
+                UserCategory.objects.create(user=user, category=category)
+
+            return redirect('user_list')
+    else:
+        form = CustomUserCreationForm()
+
+    return render(request, 'DuxteSubscriptions/custom_admin/create_user.html', {
+        'form': form,
+        'available_categories': available_categories,  # Pass categories to the template
+    })
+
+@login_required
+@user_passes_test(lambda u: u.is_superuser)
+def edit_user(request, user_id):
+    user = get_object_or_404(User, id=user_id)
+    available_categories = SoftwareCategory.objects.all()
+    user_categories = user.usercategory_set.values_list('category', flat=True).distinct()
+
+    if request.method == 'POST':
+        form = CustomUserCreationForm(request.POST, instance=user, is_edit=True)  # Pass is_edit=True
+        if form.is_valid():
+            user = form.save(commit=False)  # Don't save yet, handle password separately
+
+            # Update password if it's provided
+            if form.cleaned_data.get('password1'):
+                user.set_password(form.cleaned_data['password1'])
+
+            user.save()  # Save the updated user
+
+            # Clear existing categories and assign new ones
+            UserCategory.objects.filter(user=user).delete()  # Clear existing categories
+            selected_categories = request.POST.getlist('categories')  # Get selected categories from the form
+            for category_id in selected_categories:
+                category = SoftwareCategory.objects.get(id=category_id)
+                UserCategory.objects.create(user=user, category=category)  # Assign new categories
+
+            messages.success(request, 'User updated successfully.')
+            return redirect('user_list')
+    else:
+        # Pre-fill the form with the user's current data
+        form = CustomUserCreationForm(instance=user, is_edit=True)  # Pass is_edit=True
+        form.fields['categories'].initial = user_categories  # Pre-select existing categories
+
+    return render(request, 'DuxteSubscriptions/custom_admin/edit_user.html', {
+        'form': form,
+        'available_categories': available_categories,
+        'user_categories': user_categories,  # Pass unique categories to the template
+    })
+
+@login_required
+@user_passes_test(lambda u: u.is_superuser)
+def user_list(request):
+    users = User.objects.all()
+    return render(request, 'DuxteSubscriptions/custom_admin/user_list.html', {'users': users})
+
+@login_required
+@user_passes_test(lambda u: u.is_superuser)
+def delete_user(request, user_id):
+    user = get_object_or_404(User, id=user_id)
+    user.delete()
+    return redirect('user_list')
 
 @login_required
 def create_company_user(request):
@@ -1318,4 +1396,9 @@ def import_software(request):
         form = SoftwareImportForm()
 
     return render(request, 'DuxteSubscriptions/import_software.html', {'form': form})
+
+@login_required
+@user_passes_test(lambda u: u.is_superuser)
+def admin_home(request):
+    return render(request, 'DuxteSubscriptions/custom_admin/home.html')
 

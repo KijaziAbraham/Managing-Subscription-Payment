@@ -1,0 +1,29 @@
+{% extends "base_auth.html" %}
+{% load static %}
+
+{% block extend_head %}
+<title>Duxte | 400 Bad Request</title>
+<style>
+    body {
+        background-color: #f9f9f9; 
+        color: #333; 
+    }
+    .error-title {
+        color: #31B136; 
+        font-size: 3rem; 
+    }
+    .lead {
+        color: #31B136; 
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="ftco-section">
+  <div class="container text-center">
+    <h1 class="display-4">400: Bad Request</h1>
+    <p class="lead">Your request could not be processed.</p>
+  </div>
+</section>
+{% endblock %}
+

@@ -20,7 +20,7 @@ def validate_phone_number(phone_number):
     if not (10 <= len(digits_only) <= 16):
         raise ValidationError(f"Phone number must contain between 10 and 16 digits, after removing non-digit characters. Given: {digits_only} ({len(digits_only)} digits).")
 
-    return digits_only
+    return digits_only                                                  
 
 class SoftwareCategory(models.Model):
     name = models.CharField(max_length=100, unique=True)
@@ -33,10 +33,11 @@ class UserCategory(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     category = models.ForeignKey(SoftwareCategory, on_delete=models.CASCADE)
 
+    class Meta:
+            unique_together = ('user', 'category')
     def __str__(self):
-        return f"{self.user.username} - {self.category.name}"
-    
-
+            return f"{self.user.username} - {self.category.name}"
+        
 class SoftwareEdition(models.Model):
     name = models.CharField(max_length=100, unique=True)
 

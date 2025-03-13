@@ -1,3 +1,4 @@
+from django.conf.urls import handler400, handler403, handler404, handler500
 from django.urls import path
 from . import views
 
@@ -51,6 +52,10 @@ urlpatterns = [
     path('import-users/', views.import_users, name='import_users'),
     path('import-software/', views.import_software, name='import_software_view'),
     path('change-password/', views.change_password, name='change_password'),
-
+    path('custom-admin/', views.admin_home, name='admin_home'),
+    path('custom-admin/create-user/', views.create_user, name='create_user'),
+    path('custom-admin/user-list/', views.user_list, name='user_list'),
+    path('custom-admin/edit-user/<int:user_id>/', views.edit_user, name='edit_user'),
+    path('custom-admin/delete-user/<int:user_id>/', views.delete_user, name='delete_user'),
 ]
 
