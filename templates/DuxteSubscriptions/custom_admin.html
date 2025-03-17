@@ -1,0 +1,14 @@
+<!-- DuxteSubscriptions/templates/DuxteSubscriptions/custom_admin/home.html -->
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Custom Admin Panel</h1>
+<ul>
+    <li><a href="{% url 'software_category_list' %}">Software Categories</a></li>
+    <li><a href="{% url 'software_edition_list' %}">Software Editions</a></li>
+    <li><a href="{% url 'software_version_list' %}">Software Versions</a></li>
+    <li><a href="{% url 'software_list' %}">Software</a></li>
+    <li><a href="{% url 'company_user_list' %}">Company Users</a></li>
+    <li><a href="{% url 'audit_log_list' %}">Audit Logs</a></li>
+</ul>
+{% endblock %}

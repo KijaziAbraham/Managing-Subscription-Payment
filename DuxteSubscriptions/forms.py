@@ -113,22 +113,21 @@ class CompanyUserForm(forms.ModelForm):
             self.fields['software_addons'].queryset = software_instance.addons.all()
 
 
-
 class SoftwareForm(forms.ModelForm):
     editions = forms.ModelMultipleChoiceField(
         queryset=SoftwareEdition.objects.all(),
         widget=forms.CheckboxSelectMultiple,  
-        required=False 
+        required=False  # Allow empty selections
     )
     versions = forms.ModelMultipleChoiceField(
         queryset=SoftwareVersion.objects.all(),
         widget=forms.CheckboxSelectMultiple,  
-        required=False  
+        required=False  # Allow empty selections
     )
     addons = forms.ModelMultipleChoiceField(
         queryset=Addon.objects.all(),
         widget=forms.CheckboxSelectMultiple,  
-        required=False  
+        required=False  # Allow empty selections
     )
 
     class Meta:
@@ -141,12 +140,9 @@ class SoftwareForm(forms.ModelForm):
         versions = cleaned_data.get('versions')
         addons = cleaned_data.get('addons')
 
-        if not editions:
-            self.add_error('editions', 'At least one edition must be selected.')
-        if not versions:
-            self.add_error('versions', 'At least one version must be selected.')
-        if not addons:
-            self.add_error('addons', 'At least one addon must be selected.')
+        # Remove validation errors for empty selections
+        # Since "None" is a valid option, no need to enforce at least one selection
+        # You can add custom logic here if needed
 
         return cleaned_data
 

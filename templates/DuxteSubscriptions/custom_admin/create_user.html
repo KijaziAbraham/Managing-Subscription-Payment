@@ -6,9 +6,9 @@
 <style>
     input[disabled] {
         cursor: not-allowed;
-      }
-    
-      .btn-primary-custom {
+    }
+
+    .btn-primary-custom {
         display: inline-block;
         font-weight: 400;
         color: #fff;
@@ -23,19 +23,19 @@
         text-decoration: none;
         border-radius: 0.5rem;
         transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
-      }
-    
-      .btn-primary-custom:hover {
+    }
+
+    .btn-primary-custom:hover {
         background-color: #249c1f;
         border-color: #249c1f;
         color: white;
-      }
-    
-      .btn-primary-custom i {
+    }
+
+    .btn-primary-custom i {
         margin-right: 8px;
-      }
-    
-      .btn-secondary-custom {
+    }
+
+    .btn-secondary-custom {
         display: inline-block;
         font-weight: 400;
         color: #fff;
@@ -50,38 +50,78 @@
         text-decoration: none;
         border-radius: 0.5rem;
         transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
-      }
-    
-      .btn-secondary-custom:hover {
+    }
+
+    .btn-secondary-custom:hover {
         background-color: #c82333;
         border-color: #c82333;
         color: white;
-      }
-    
-      .btn-secondary-custom i {
+    }
+
+    .btn-secondary-custom i {
         margin-right: 8px;
-      }
-    
-      .input-error {
+    }
+
+    .input-error {
         border: 1px solid red;
-      }
-    
-      .error-message {
+    }
+
+    .error-message {
         color: red;
         font-size: 0.875rem;
-      }
-    
-      .divider {
+    }
+
+    .divider {
         border-top: 2px solid #31B136;
         margin: 0.8rem 0;
         width: 60%;
-      }
+    }
+
+    .section-header {
+      background-color:rgb(255, 255, 255);
+      color: black;
+        padding: 0.5px;
+        border-radius: 5px;
+        margin-bottom: 10px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .section-header h6 {
+        margin: 0;
+    }
+
+    .search-box {
+        width: 200px;
+        padding: 5px;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+    }
+
+    .checkbox-group {
+        max-height: 200px;
+        overflow-y: auto;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        padding: 10px;
+        margin-top: 10px;
+    }
+
+    .checkbox-group div {
+        width: 20%; /* 5 checkboxes per row */
+        box-sizing: border-box;
+        padding: 0.5rem 0;
+    }
+
+    .checkbox-group label {
+        margin-left: 5px;
+    }
 </style>
 {% endblock %}
 
 {% block content %}
 <section class="ftco-section">
-    <div class="container">
         <h4>Create User</h4>
         <div class="divider"></div>
 
@@ -150,8 +190,11 @@
 
                 <!-- Software Categories -->
                 <div class="col-md-12 form-group">
-                    <label for="categories">Software Categories<span class="text-danger">*</span></label>
-                    <div class="checkbox-group">
+                    <div class="section-header">
+                        <h6>Software Categories</h6>
+                        <input type="text" id="category-search" class="search-box" placeholder="Search categories...">
+                    </div>
+                    <div class="checkbox-group" id="category-checkbox-group">
                         {% for category in available_categories %}
                         <div>
                             <input type="checkbox" id="category_{{ forloop.counter }}" name="categories" value="{{ category.id }}">
@@ -169,8 +212,36 @@
             <div class="button-container">
                 <button type="submit" class="btn-primary-custom"><i class="fa fa-save"></i> Create User</button>
                 {% comment %} <a href="{% url 'user_list' %}" class="btn btn-primary-custom btn-small"><i class="fa fa-arrow-left"></i> Back to User List</a> {% endcomment %}
-</div>
+            </div>
         </form>
     </div>
 </section>
+
+<script>
+    // Function to filter checkboxes based on search input
+    function filterCheckboxes(searchInputId, checkboxGroupId) {
+        const searchInput = document.getElementById(searchInputId);
+        const checkboxGroup = document.getElementById(checkboxGroupId);
+
+        searchInput.addEventListener('input', function () {
+            const searchTerm = searchInput.value.toLowerCase();
+            const checkboxes = checkboxGroup.querySelectorAll('div');
+
+            checkboxes.forEach(function (checkbox) {
+                const label = checkbox.querySelector('label');
+                if (label) {
+                    const text = label.textContent.toLowerCase();
+                    if (text.includes(searchTerm)) {
+                        checkbox.style.display = 'block';
+                    } else {
+                        checkbox.style.display = 'none';
+                    }
+                }
+            });
+        });
+    }
+
+    // Apply search functionality to categories
+    filterCheckboxes('category-search', 'category-checkbox-group');
+</script>
 {% endblock %}

@@ -84,7 +84,6 @@
 
 {% block content %}
 <section class="ftco-section">
-  <div class="container">
     <h4>Update Company User Details</h4>
     <div class="divider"></div>
 
@@ -248,20 +247,24 @@
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
-  // Get the pre-selected editions, versions, and addons from the form
-  const preSelectedEditions = JSON.parse('{{ form.software_edition.value|safe }}');
-  const preSelectedVersions = JSON.parse('{{ form.software_version.value|safe }}');
-  const preSelectedAddons = JSON.parse('{{ form.software_addons.value|safe }}');
+// Get the pre-selected editions, versions, and addons from the form
+const preSelectedEditions = '{{ form.software_edition.value|default_if_none:"" }}';
+const preSelectedVersions = '{{ form.software_version.value|default_if_none:"" }}';
+const preSelectedAddons = JSON.parse('{{ form.software_addons.value|default_if_none:"[]"|safe }}');
 
-  // Function to handle pre-selecting values
-  function preSelectOptions(selectElement, preSelectedValue) {
+// Function to handle pre-selecting values
+function preSelectOptions(selectElement, preSelectedValue) {
     selectElement.find('option').each(function() {
-      if ($(this).val() == preSelectedValue) {
-        $(this).prop('selected', true);
-      }
+        if ($(this).val() == preSelectedValue) {
+            $(this).prop('selected', true);
+        }
     });
-  }
+}
 
+// On page load, trigger change to load initial data if software is pre-selected
+if ($('#id_software').val()) {
+    $('#id_software').trigger('change');
+}
   // When software is changed, load editions, versions, and addons
   $('#id_software').change(function() {
     let softwareId = $(this).val();

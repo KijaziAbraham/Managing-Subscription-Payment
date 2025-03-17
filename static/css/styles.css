@@ -329,6 +329,16 @@ h1, h2, h3, h4, h5, h6 {
     font-size: 10px; /* Even smaller font size for the date */
   }
 } 
+
+
+/* SweetAlert2 Custom Positioning for Top-Left */
+.swal2-container {
+  top: 10px !important;
+  left: 10px !important;
+  position: fixed !important; /* Fix it at the top-left corner */
+  z-index: 9999; /* Ensure it's on top of other content */
+}
+
 /*--------------------------------------------------------------
 # Sidebar
 --------------------------------------------------------------*/
@@ -1002,35 +1012,124 @@ margin-top: 5px;
 
 
 /*--------------------------------------------------------------
-# Dashboard
+# Dashboard - Small Box Style
 --------------------------------------------------------------*/
-  .dashboard-box {
-    padding: 20px;
-    margin-bottom: 15px;
-    border-radius: 5px;
+.small-box {
+  border-radius: 5px;
+  position: relative;
+  display: block;
+  margin-bottom: 20px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  transition: transform 0.3s ease, background-color 0.3s ease;
+}
+
+.small-box > .inner {
+  padding: 15px;
+  text-align: center;
+}
+
+.small-box h3 {
+  font-size: 2.5em;
+  font-weight: bold;
+  margin: 0;
+  color: white;
+}
+
+.small-box p {
+  font-size: 16px;
+  margin: 10px 0;
+  color: white;
+}
+
+.small-box > .small-box-footer {
+  position: relative;
+  text-align: center;
+  padding: 5px 0;
+  color: white;
+  background: rgba(0, 0, 0, 0.15);
+  text-decoration: none;
+  display: block;
+  z-index: 10;
+}
+
+.small-box > .small-box-footer:hover {
+  color: white;
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.small-box .icon {
+  position: absolute;
+  top: -15px;
+  right: 15px;
+  font-size: 90px;
+  color: rgba(0, 0, 0, 0.15);
+  z-index: 0;
+  transition: all 0.3s linear;
+}
+
+.small-box:hover .icon {
+  font-size: 95px;
+  color: rgba(0, 0, 0, 0.2);
+}
+
+.small-box:hover {
+  transform: translateY(-5px);
+}
+
+.small-box.bg-aqua {
+  background-color: #00c0ef;
+}
+
+.small-box.bg-green {
+  background-color: #00a65a;
+}
+
+.small-box.bg-blue {
+  background-color: #007bff;
+}
+
+.small-box.bg-maroon {
+  background-color: #800000;
+}
+
+/* Responsive adjustments */
+@media (max-width: 991px) {
+  .small-box {
     text-align: center;
-    cursor: pointer;
-    color: white;
-    font-size: 1.2em;
-    font-weight: bold;
-    height: 150px; 
+  }
+
+  .small-box .icon {
+    display: none;
+  }
+
+  .small-box p {
+    font-size: 14px;
+  }
+
+  .small-box h3 {
+    font-size: 1.8em;
+  }
+
+  /* For medium screens, 2 boxes per row */
+  .col-md-6 {
+    width: 50%;
+  }
+}
+
+/* Make sure flex-wrap is applied for small screens */
+@media (max-width: 767px) {
+  .row {
     display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    transition: background-color 0.3s;
+    flex-wrap: wrap;
+    justify-content: space-between;
   }
-  .follow-up-customers { background-color: #f0a500; }
-  .active-customers { background-color: #28a745; }
-  .valid-customers { background-color: #007bff; }
-  .expired-customers { background-color: #dc3545; }
-  .dashboard-box:hover {
-    background-color: #333;
+
+  .col-xs-6 {
+    width: 50%;
   }
-  .count {
-    font-size: 2em; 
-    font-weight: bold;
-  }
+}
+ 
 /*--------------------------------------------------------------
 # Alert
 --------------------------------------------------------------*/

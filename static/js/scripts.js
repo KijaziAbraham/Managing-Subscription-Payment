@@ -203,3 +203,31 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   });
 });
+
+
+document.addEventListener('DOMContentLoaded', function () {
+    // Function to handle checkbox behavior
+    function handleCheckboxBehavior(noneCheckboxId, checkboxGroupName) {
+        const noneCheckbox = document.getElementById(noneCheckboxId);
+        const checkboxes = document.querySelectorAll(`input[name="${checkboxGroupName}"]:not([id="${noneCheckboxId}"])`);
+
+        checkboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', function () {
+                if (this.checked) {
+                    noneCheckbox.checked = false; // Uncheck "None" if any other checkbox is checked
+                } else {
+                    // If no checkboxes are checked, re-check "None"
+                    const anyChecked = Array.from(checkboxes).some(cb => cb.checked);
+                    if (!anyChecked) {
+                        noneCheckbox.checked = true;
+                    }
+                }
+            });
+        });
+    }
+
+    // Apply behavior to editions, versions, and addons
+    handleCheckboxBehavior('edition_none', 'editions');
+    handleCheckboxBehavior('version_none', 'versions');
+    handleCheckboxBehavior('addon_none', 'addons');
+});

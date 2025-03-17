@@ -4,6 +4,7 @@
 {% block extend_head %}
 <title>Duxte | Dashboard</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 <style>
   .divider {
     border-top: 2px solid #31B136; /* Thicker divider with dominant color */
@@ -48,7 +49,6 @@
 
 {% block content %}
 <section class="ftco-section">
-  <div class="container">
     <h4>Dashboard</h4>
     <div class="divider"></div>
 
@@ -61,35 +61,64 @@
     </div>
   {% endif %}
 
-    <div class="row mb-4">
-      <div class="col-md-3">
-        <div class="dashboard-box follow-up-customers" onclick="window.location.href='{% url 'company_user_list_with_category' 'follow_up' %}'">
-          Follow-Up Customers <br>
-          <span class="count" data-count="{{ follow_up_count }}">0</span>
+  <div class="row">
+    <div class="col-lg-3 col-md-6 col-sm-6 col-xs-6">
+      <div class="small-box bg-aqua" onclick="window.location.href='{% url 'company_user_list_with_category' 'follow_up' %}'">
+        <div class="inner">
+          <h3><span class="count" data-count="{{ follow_up_count }}">0</span></h3>
+          <p>Follow-Up Customers</p>
         </div>
-      </div>
-      <div class="col-md-3">
-        <div class="dashboard-box active-customers" onclick="window.location.href='{% url 'company_user_list_with_category' 'active' %}'">
-          Active Customers <br>
-          <span class="count" data-count="{{ active_count }}">0</span>
+        <div class="icon">
+          <i class="fa fa-users"></i>
         </div>
-      </div>
-      <div class="col-md-3">
-        <div class="dashboard-box valid-customers" onclick="window.location.href='{% url 'company_user_list_with_category' 'valid' %}'">
-          Valid Customers <br>
-          <span class="count" data-count="{{ valid_count }}">0</span>
-        </div>
-      </div>
-      <div class="col-md-3">
-        <div class="dashboard-box expired-customers" onclick="window.location.href='{% url 'company_user_list_with_category' 'expired' %}'">
-          Expired Customers <br>
-          <span class="count" data-count="{{ expired_count }}">0</span>
-        </div>
+        <a href="{% url 'company_user_list_with_category' 'follow_up' %}" class="small-box-footer">More Info <i class="fa fa-arrow-circle-right"></i></a>
       </div>
     </div>
+  
+    <div class="col-lg-3 col-md-6 col-sm-6 col-xs-6">
+      <div class="small-box bg-green" onclick="window.location.href='{% url 'company_user_list_with_category' 'active' %}'">
+        <div class="inner">
+          <h3><span class="count" data-count="{{ active_count }}">0</span></h3>
+          <p>Active Customers</p>
+        </div>
+        <div class="icon">
+          <i class="fa fa-check-circle"></i>
+        </div>
+        <a href="{% url 'company_user_list_with_category' 'active' %}" class="small-box-footer">More Info <i class="fa fa-arrow-circle-right"></i></a>
+      </div>
+    </div>
+  
+    <div class="col-lg-3 col-md-6 col-sm-6 col-xs-6">
+      <div class="small-box bg-blue" onclick="window.location.href='{% url 'company_user_list_with_category' 'valid' %}'">
+        <div class="inner">
+          <h3><span class="count" data-count="{{ valid_count }}">0</span></h3>
+          <p>Valid Customers</p>
+        </div>
+        <div class="icon">
+          <i class="fa fa-check"></i>
+        </div>
+        <a href="{% url 'company_user_list_with_category' 'valid' %}" class="small-box-footer">More Info <i class="fa fa-arrow-circle-right"></i></a>
+      </div>
+    </div>
+  
+    <div class="col-lg-3 col-md-6 col-sm-6 col-xs-6">
+      <div class="small-box bg-maroon" onclick="window.location.href='{% url 'company_user_list_with_category' 'expired' %}'">
+        <div class="inner">
+          <h3><span class="count" data-count="{{ expired_count }}">0</span></h3>
+          <p>Expired Customers</p>
+        </div>
+        <div class="icon">
+          <i class="fa fa-times-circle"></i>
+        </div>
+        <a href="{% url 'company_user_list_with_category' 'expired' %}" class="small-box-footer">More Info <i class="fa fa-arrow-circle-right"></i></a>
+      </div>
+    </div>
+  </div>
+  
+  
+  
 
     <section class="ftco-section2">
-      <div class="container">
         <h4>Software Usage Trends</h4>
         <div class="divider"></div>
         <div class="row">

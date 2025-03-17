@@ -112,7 +112,6 @@
 {% block content %}
 
 <section class="ftco-section">
-    <div class="container">
       <h4 class="mb-4">
   
 
@@ -159,6 +158,7 @@
             <th>#</th>
             <th>Company</th>
             <th>Email</th>
+            <th>Product</th>
             <th>Subscription Date</th>
             <th>Subscription End</th>
             <th>Subscription</th>
@@ -172,6 +172,7 @@
             <td>{{ forloop.counter }}</td>
             <td>{{ company_user.customer_name }}</td>
             <td>{{ company_user.email1 }}</td>
+            <td>{{ company_user.software }}</td>
             <td>{{ company_user.date_of_subscription }}</td>
             <td>{{ company_user.end_of_subscription }}</td>
             <td>

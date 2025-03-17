@@ -106,6 +106,7 @@ def logout_view(request):
     auth_logout(request)
     return redirect('login')
 
+
 @login_required
 @user_passes_test(lambda u: u.is_superuser)
 def create_user(request):
@@ -120,7 +121,11 @@ def create_user(request):
             # Assign selected categories to the user
             categories = form.cleaned_data['categories']
             for category in categories:
-                UserCategory.objects.create(user=user, category=category)
+                try:
+                    # Use get_or_create to avoid duplicates
+                    UserCategory.objects.get_or_create(user=user, category=category)
+                except Exception as e:
+                    messages.warning(request, f"Category '{category.name}' is already assigned to this user.")
 
             return redirect('user_list')
     else:
@@ -249,6 +254,14 @@ def load_editions_and_versions(request):
             editions = software.editions.all().values('id', 'name')
             versions = software.versions.all().values('id', 'name')
             addons = software.addons.all().values('id', 'name')
+
+            # Add "None" option if no editions, versions, or addons are available
+            if not editions:
+                editions = [{'id': '', 'name': 'None'}]
+            if not versions:
+                versions = [{'id': '', 'name': 'None'}]
+            if not addons:
+                addons = [{'id': '', 'name': 'None'}]
 
             return JsonResponse({
                 'editions': list(editions),
@@ -673,16 +686,22 @@ def software_list(request):
 def edit_software(request, pk):
     software = get_object_or_404(Software, pk=pk)
 
-
+    # Get all available editions, versions, and addons
     available_editions = SoftwareEdition.objects.all()
     available_versions = SoftwareVersion.objects.all()
     available_addons = Addon.objects.all()
+
+    # Get pre-selected editions, versions, and addons for the software
+    pre_selected_editions = software.editions.all()
+    pre_selected_versions = software.versions.all()
+    pre_selected_addons = software.addons.all()
 
     if request.method == 'POST':
         form = SoftwareForm(request.POST, instance=software)
         if form.is_valid():
             form.save()
 
+            # Update editions, versions, and addons
             software.editions.set(request.POST.getlist('editions'))
             software.versions.set(request.POST.getlist('versions'))
             software.addons.set(request.POST.getlist('addons'))
@@ -692,9 +711,13 @@ def edit_software(request, pk):
 
     return render(request, 'DuxteSubscriptions/edit_software.html', {
         'form': form,
+        'software': software,
         'available_editions': available_editions,
         'available_versions': available_versions,
         'available_addons': available_addons,
+        'pre_selected_editions': pre_selected_editions,
+        'pre_selected_versions': pre_selected_versions,
+        'pre_selected_addons': pre_selected_addons,
     })
 
 @login_required
@@ -1059,8 +1082,8 @@ def validate_phone_number(phone_number):
     # Remove all non-digit characters (including spaces)
     digits_only = re.sub(r'\D', '', phone_number)
     
-    # Check if the length of digits is between 10 and 16
-    return 10 <= len(digits_only) <= 16
+    # Check if the length of digits is between 9 and 16
+    return 9 <= len(digits_only) <= 16
 
 
 def parse_date(date_str):
@@ -1124,7 +1147,7 @@ def import_users(request):
                 messages.error(request, f"Error reading Excel file: {str(e)}")
                 return redirect('import_users')
 
-        # Step 1: Validating rows
+            # Step 1: Validating rows
             for index, row in df.iterrows():
                 row_errors = []
                 software, edition, version, row_errors = validate_software_row(row, row_errors)
@@ -1135,7 +1158,7 @@ def import_users(request):
 
                 phone_number = row.iloc[4]
                 if not validate_phone_number(phone_number):
-                    row_errors.append("Phone number must contain between 10 and 16 digits.")
+                    row_errors.append("Phone number must contain between 9 and 16 digits.")
 
                 date_of_registration = parse_date(row.iloc[7])
                 date_of_subscription = parse_date(row.iloc[8])
@@ -1150,14 +1173,19 @@ def import_users(request):
                 if row_errors:
                     errors.append(f"Row {index + 2}: {', '.join(row_errors)}")
 
-        # Step 2: Saving data if no errors
+            # Step 2: Saving data if no errors
             if not errors:
                 try:
                     with transaction.atomic():
                         for index, row in df.iterrows():
                             try:
                                 software, edition, version, _ = validate_software_row(row, [])
-                                addons = Addon.objects.filter(name__in=[addon.strip() for addon in row.iloc[14].split(",") if addon.strip()])
+                                
+                                # Handle empty addons
+                                addons = []
+                                if row.iloc[14]:  # Only process addons if the field is not empty
+                                    addons = Addon.objects.filter(name__in=[addon.strip() for addon in row.iloc[14].split(",") if addon.strip()])
+
                                 company_user = CompanyUser(
                                     customer_name=row.iloc[0],
                                     customer_account=row.iloc[1],
@@ -1171,11 +1199,11 @@ def import_users(request):
                                     subscription_duration=subscription_duration,
                                     is_active=row.iloc[10],
                                     software=software,
-                                    software_edition=edition,
-                                    software_version=version,
+                                    software_edition=edition,  # Can be None
+                                    software_version=version,  # Can be None
                                 )
                                 company_user.save()
-                                company_user.software_addons.set(addons)
+                                company_user.software_addons.set(addons)  # Can be empty
 
                             except Exception as e:
                                 errors.append(f"Error importing row {index + 2}: {str(e)}")
@@ -1206,23 +1234,29 @@ def import_users(request):
 
 # Helper function to fetch and validate software data and Importation
 def validate_software_row(row, row_errors):
+    software_name = row.iloc[11].strip().lower()
+    edition_name = row.iloc[12].strip().lower() if row.iloc[12] else None  # Handle empty edition
+    version_name = row.iloc[13].strip().lower() if row.iloc[13] else None  # Handle empty version
+
     try:
-        software = Software.objects.get(name__iexact=row.iloc[11].strip().lower())
+        software = Software.objects.get(name__iexact=software_name)
     except Software.DoesNotExist:
-        row_errors.append(f"Software '{row.iloc[11]}' does not exist.")
+        row_errors.append(f"Software '{software_name}' does not exist.")
         software = None
 
-    try:
-        edition = SoftwareEdition.objects.get(name__iexact=row.iloc[12].strip().lower())
-    except SoftwareEdition.DoesNotExist:
-        row_errors.append(f"Edition '{row.iloc[12]}' does not exist.")
-        edition = None
+    edition = None
+    if edition_name:  # Only fetch edition if it's not empty
+        try:
+            edition = SoftwareEdition.objects.get(name__iexact=edition_name)
+        except SoftwareEdition.DoesNotExist:
+            row_errors.append(f"Edition '{edition_name}' does not exist.")
 
-    try:
-        version = SoftwareVersion.objects.get(name__iexact=row.iloc[13].strip().lower())
-    except SoftwareVersion.DoesNotExist:
-        row_errors.append(f"Version '{row.iloc[13]}' does not exist.")
-        version = None
+    version = None
+    if version_name:  # Only fetch version if it's not empty
+        try:
+            version = SoftwareVersion.objects.get(name__iexact=version_name)
+        except SoftwareVersion.DoesNotExist:
+            row_errors.append(f"Version '{version_name}' does not exist.")
 
     return software, edition, version, row_errors
 
@@ -1279,8 +1313,8 @@ def import_software(request):
         if form.is_valid():
             file = request.FILES['file']
             try:
-                df = pd.read_excel(file, dtype=str) 
-                df = df.fillna('')  
+                df = pd.read_excel(file, dtype=str)
+                df = df.fillna('')
             except Exception as e:
                 messages.error(request, f"Error reading Excel file: {str(e)}")
                 AuditLog.objects.create(
@@ -1291,111 +1325,99 @@ def import_software(request):
                 return render(request, 'DuxteSubscriptions/import_software.html', {'form': form})
 
             errors = []
-            imported_software = []
+            software_data = []  
             existing_software_names = set(Software.objects.filter(is_deleted=False).values_list('name', flat=True))
 
             for index, row in df.iterrows():
                 row_errors = []
+                name = str(row.get('name', '')).strip()
+                category_name = str(row.get('category', '')).strip()
+                editions_names = str(row.get('editions (comma separated)', '')).strip().split(',')
+                versions_names = str(row.get('versions (comma separated)', '')).strip().split(',')
+                addons_names = str(row.get('addons (comma separated)', '')).strip().split(',')
+
+                if not all([name, category_name]):
+                    row_errors.append("Software name and category fields are required.")
+
                 try:
-                    name = str(row.get('name', '')).strip()
-                    category_name = str(row.get('category', '')).strip()
-                    editions_names = str(row.get('editions (comma separated)', '')).strip().split(',')
-                    versions_names = str(row.get('versions (comma separated)', '')).strip().split(',')
-                    addons_names = str(row.get('addons (comma separated)', '')).strip().split(',')
+                    category = SoftwareCategory.objects.get(name=category_name)
+                except SoftwareCategory.DoesNotExist:
+                    row_errors.append(f"Category '{category_name}' does not exist.")
 
-                    if not all([name, category_name]):
-                        row_errors.append("Software name and category fields are required.")
+                if name in existing_software_names:
+                    row_errors.append(f"Software with the name '{name}' already exists.")
 
-                    try:
-                        category = SoftwareCategory.objects.get(name=category_name)
-                    except SoftwareCategory.DoesNotExist:
-                        row_errors.append(f"Category '{category_name}' does not exist.")
+                edition_instances = []
+                for edition_name in editions_names:
+                    edition_name = edition_name.strip()
+                    if edition_name:
+                        try:
+                            edition = SoftwareEdition.objects.get(name=edition_name)
+                            edition_instances.append(edition)
+                        except SoftwareEdition.DoesNotExist:
+                            row_errors.append(f"Edition '{edition_name}' does not exist.")
 
-                    if name in existing_software_names:
-                        row_errors.append(f"Software with the name '{name}' already exists.")
+                version_instances = []
+                for version_name in versions_names:
+                    version_name = version_name.strip()
+                    if version_name:
+                        try:
+                            version = SoftwareVersion.objects.get(name=version_name)
+                            version_instances.append(version)
+                        except SoftwareVersion.DoesNotExist:
+                            row_errors.append(f"Version '{version_name}' does not exist.")
 
-                    edition_instances = []
-                    for edition_name in editions_names:
-                        edition_name = edition_name.strip()
-                        if edition_name:
-                            try:
-                                edition = SoftwareEdition.objects.get(name=edition_name)
-                                edition_instances.append(edition)
-                            except SoftwareEdition.DoesNotExist:
-                                row_errors.append(f"Edition '{edition_name}' does not exist.")
+                addon_instances = []
+                for addon_name in addons_names:
+                    addon_name = addon_name.strip()
+                    if addon_name:
+                        try:
+                            addon = Addon.objects.get(name=addon_name)
+                            addon_instances.append(addon)
+                        except Addon.DoesNotExist:
+                            row_errors.append(f"Addon '{addon_name}' does not exist.")
 
-                    version_instances = []
-                    for version_name in versions_names:
-                        version_name = version_name.strip()
-                        if version_name:
-                            try:
-                                version = SoftwareVersion.objects.get(name=version_name)
-                                version_instances.append(version)
-                            except SoftwareVersion.DoesNotExist:
-                                row_errors.append(f"Version '{version_name}' does not exist.")
+                if row_errors:
+                    errors.append(f"Row {index + 2}: {', '.join(row_errors)}")
 
-                    addon_instances = []
-                    for addon_name in addons_names:
-                        addon_name = addon_name.strip()
-                        if addon_name:
-                            try:
-                                addon = Addon.objects.get(name=addon_name)
-                                addon_instances.append(addon)
-                            except Addon.DoesNotExist:
-                                row_errors.append(f"Addon '{addon_name}' does not exist.")
-
-                    if row_errors:
-                        errors.append(f"Row {index + 2}: {', '.join(row_errors)}")
-                        continue 
-
-                    software = Software(name=name, category=category)
-                    software.save()  
-
-                    software.editions.set(edition_instances)
-                    software.versions.set(version_instances)
-                    software.addons.set(addon_instances)
-
-                    imported_software.append(software)
-
-                except Exception as e:
-                    errors.append(f"Row {index + 2}: Error importing row: {str(e)}")
-                    continue
+                software_data.append({
+                    'name': name,
+                    'category': category if 'category' in locals() else None,
+                    'editions': edition_instances,
+                    'versions': version_instances,
+                    'addons': addon_instances
+                })
 
             if errors:
-                messages.error(request, 'Import failed with errors. Please check the detailed error report.')
+                messages.error(request, 'Import failed due to errors. No records were imported.')
                 AuditLog.objects.create(
                     user=request.user,
                     action="IMPORT FAILED",
-                    details=(
-                        f"Errors occurred during import on {timezone.now().strftime('%Y-%m-%d %H:%M:%S')}: "
-                        f"{', '.join(errors)}"
-                    )
+                    details=f"Errors occurred: {', '.join(errors)}"
                 )
                 return render(request, 'DuxteSubscriptions/import_software.html', {'form': form, 'errors': errors})
 
-            try:
-                messages.success(request, 'Software import process completed successfully.')
-                AuditLog.objects.create(
-                    user=request.user,
-                    action="IMPORT SUCCEEDED",
-                    details="Software import process completed successfully."
-                )
-                return redirect('software_list')
-            except Exception as e:
-                messages.error(request, f"Import failed: {str(e)}")
-                AuditLog.objects.create(
-                    user=request.user,
-                    action="IMPORT FAILED",
-                    details=(
-                        f"Import failed on {timezone.now().strftime('%Y-%m-%d %H:%M:%S')}: "
-                        f"{str(e)}"
-                    )
-                )
-                return render(request, 'DuxteSubscriptions/import_software.html', {'form': form, 'errors': errors})
+            # If no errors, save all data
+            for data in software_data:
+                software = Software(name=data['name'], category=data['category'])
+                software.save()
+                software.editions.set(data['editions'])
+                software.versions.set(data['versions'])
+                software.addons.set(data['addons'])
+
+            messages.success(request, 'Software import process completed successfully.')
+            AuditLog.objects.create(
+                user=request.user,
+                action="IMPORT SUCCEEDED",
+                details="Software import process completed successfully."
+            )
+            return redirect('software_list')
+
     else:
         form = SoftwareImportForm()
 
     return render(request, 'DuxteSubscriptions/import_software.html', {'form': form})
+
 
 @login_required
 @user_passes_test(lambda u: u.is_superuser)

@@ -1,8 +1,8 @@
 {% extends "main.html" %}
-{% block page_title %}User List{% endblock %}
+{% block page_title %}Software List{% endblock %}
 
 {% block extend_head %}
-<title>Duxte | User List</title>
+<title>Duxte | Software List</title>
 {% endblock %}
 
 {% block content %}
@@ -67,7 +67,7 @@
 </style>
 
 <section class="ftco-section">
-    <h4 class="mb-4">User List</h4>
+    <h4 class="mb-4">Software List</h4>
     <div class="divider"></div>
   
     {% if messages %}
@@ -91,8 +91,8 @@
     {% endif %}
 
     <div>
-      <a href="{% url 'create_user' %}" class="btn btn-primary-custom2">
-        <i class="fa fa-plus"></i> Create User
+      <a href="{% url 'add_software' %}" class="btn btn-primary-custom2">
+        <i class="fa fa-plus"></i> Add Software
       </a>
     </div>
   </div>
@@ -101,55 +101,67 @@
     <table class="table table-striped">
       <thead>
         <tr>
-            <th>Username</th>
-            <th>Assigned Categories</th>
-            <th>Actions</th>
+          <th>Name</th>
+          <th>Category</th>
+          <th>Editions</th>
+          <th>Versions</th>
+          <th>Add-ons</th>
+          <th>Actions</th>
         </tr>
-    </thead>
-    <tbody>
-        {% for user in users %}
+      </thead>
+      <tbody>
+        {% for software in software_list %}
         <tr>
-            <!-- Username -->
-            <td>{{ user.username }}</td>
-
-            <!-- Assigned Categories -->
-            <td>
-                {% with categories=user.usercategory_set.all %}
-                    {% if categories %}
-                        {% for user_category in categories %}
-                            {{ user_category.category.name }}{% if not forloop.last %}, {% endif %}
-                        {% endfor %}
-                    {% else %}
-                        <span class="text-muted">No categories assigned</span>
-                    {% endif %}
-                {% endwith %}
-            </td>
-
-            <!-- Actions (Edit and Delete) -->
-            <td>
-                <div class="action-buttons">
-                    <span>
-                        <a href="{% url 'edit_user' user.id %}" class="action-icon">
-                            <i class="fa fa-pen"></i>
-                        </a>
-                    </span>
-                    <span>
-                        <form method="post" action="{% url 'delete_user' user.id %}" id="delete-form-{{ user.id }}">
-                            {% csrf_token %}
-                            <button type="submit" class="btn btn-dustbin action-icon" onclick="return confirm('Are you sure you want to delete this user?');">
-                                <i class="fa fa-trash"></i>
-                            </button>
-                        </form>
-                    </span>
-                </div>
-            </td>
-        </tr>   
-        {% empty %}
-        <tr>
-            <td colspan="3" class="text-center">No users found.</td>
+          <td>{{ software.name }}</td>
+          <td>{{ software.category }}</td>
+          <td>
+            {% if software.editions.exists %}
+              {{ software.editions.all|join:", " }}
+            {% else %}
+              None
+            {% endif %}
+          </td>
+          <td>
+            {% if software.versions.exists %}
+              {{ software.versions.all|join:", " }}
+            {% else %}
+              None
+            {% endif %}
+          </td>
+          
+          <td>
+            {% if software.addons.exists %}
+              {{ software.addons.all|join:", " }}
+            {% else %}
+              None
+            {% endif %}
+          </td>
+          <td>
+            <div class="action-buttons">
+              <span>
+                <a href="{% url 'edit_software' software.pk %}" class="action-icon">
+                  <i class="fa fa-eye"></i>
+                </a>
+              </span>
+              {% if user.is_superuser %}
+              <span>
+                <form method="post" action="{% url 'soft_delete_software' software.pk %}" id="soft-delete-form-{{ software.pk }}">
+                  {% csrf_token %}
+                  <button type="submit" class="btn btn-dustbin action-icon" onclick="return confirm('Are you sure you want to delete this software?');">
+                    <i class="fa fa-trash"></i>
+                  </button>
+                </form>
+              </span>
+              {% endif %}
+            </div>
+          </td>
+          
         </tr>
         {% endfor %}
-    </tbody>
-</table>
+      </tbody>
+      
+    </table>
+  </div>
 </section>
+
 {% endblock %}

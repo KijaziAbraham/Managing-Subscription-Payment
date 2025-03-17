@@ -4,7 +4,7 @@
 {% block extend_head %}
 <title>Duxte | Edit Software</title>
 <style>
-  
+    
   input[disabled] {
     cursor: not-allowed;
   }
@@ -36,6 +36,37 @@
     margin-right: 8px;
   }
 
+  .btn-secondary-custom {
+    display: inline-block;
+    font-weight: 400;
+    color: #fff;
+    text-align: center;
+    vertical-align: middle;
+    cursor: pointer;
+    background-color: #dc3545;
+    border: 1px solid #dc3545;
+    padding: 0.45rem 1.15rem;
+    font-size: 1rem;
+    line-height: 1.5;
+    text-decoration: none;
+    border-radius: 0.5rem;
+    transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  }
+
+  .btn-secondary-custom:hover {
+    background-color: #c82333;
+    border-color: #c82333;
+    color: white;
+  }
+
+  .btn-secondary-custom i {
+    margin-right: 8px;
+  }
+
+  .input-error {
+    border: 1px solid red;
+  }
+
   .error-message {
     color: red;
     font-size: 0.875rem;
@@ -51,18 +82,101 @@
     display: flex;
     flex-wrap: wrap;
   }
-
+  
   .checkbox-group div {
     width: 20%; /* 5 checkboxes per row */
-    box-sizing: border-box; /* Ensure padding does not affect width */
-    padding: 0.5rem 0; /* Add some vertical padding */
+    box-sizing: border-box; 
+    padding: 0.5rem 0; 
   }
+  .alert-content {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+    background-color: #f8d7da; 
+    color: #721c24; 
+    border: 1px solid #f5c6cb; 
+    border-radius: 5px;
+    margin-bottom: 15px;
+}
+  .error-log {
+    margin-top: 20px;
+    background-color: #f8d7da;
+    color: #721c24; 
+    border: 1px solid #f5c6cb; 
+    border-radius: 5px;
+    padding: 15px;
+}
+
+.error-title {
+    margin-bottom: 10px;
+    font-size: 1.2em;
+    color: #721c24;
+}
+
+.error-list {
+    list-style-type: none;
+    padding: 0;
+}
+
+.error-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 5px;
+    font-size: 0.95em;
+    color: #721c24;
+}
+
+.error-item i {
+    color: #dc3545; 
+}
+
+.section-header {
+  background-color:rgb(255, 255, 255);
+  color: black;
+  padding: 0.5px;
+  border-radius: 5px;
+  margin-bottom: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.section-header h6 {
+  margin: 0;
+}
+
+.search-box {
+  width: 200px;
+  padding: 5px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
+.checkbox-group {
+  max-height: 200px;
+  overflow-y: auto;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 10px;
+  margin-top: 10px;
+}
+
+.checkbox-group div {
+  width: 20%; /* 5 checkboxes per row */
+  box-sizing: border-box;
+  padding: 0.5rem 0;
+}
+
+.checkbox-group label {
+  margin-left: 5px;
+}
 </style>
 {% endblock %}
 
 {% block content %}
 <section class="ftco-section">
-  <div class="container">
     <h4>Edit Software</h4>
     <div class="divider"></div>
     <form method="post">
@@ -83,52 +197,85 @@
           {{ form.category.label_tag }}<span class="text-danger">*</span>
           <div class="input-group-icon">
             {{ form.category }}
-            <div class="input-icon"><i class="fa fa-list"></i></div>
           </div>
           {% if form.category.errors %}
           <small class="error-message">{{ form.category.errors|join:", " }}</small>
           {% endif %}
         </div>
 
-        <div class="col-md-12 form-group">
-          <label for="editions">Software Editions<span class="text-danger">*</span></label>
-          <div class="input-group-icon checkbox-group">
-            {% for edition in available_editions %}
-            <div>
-              <input type="checkbox" id="edition_{{ forloop.counter }}" name="editions" value="{{ edition.id }}" {% if edition in form.instance.editions.all %}checked{% endif %}>
-              <label for="edition_{{ forloop.counter }}">{{ edition.name }}</label>
-            </div>
-            {% endfor %}
+         <!-- Editions Section -->
+         <div class="col-md-12 form-group">
+          <div class="section-header">
+              <h6>Software Editions</h6>
+              <input type="text" id="edition-search" class="search-box" placeholder="Search editions...">
+          </div>
+          <div class="checkbox-group" id="edition-checkbox-group">
+              <!-- Disabled "None" checkbox -->
+              <div>
+                  <input type="checkbox" id="edition_none" name="editions" value="none" disabled {% if not pre_selected_editions %}checked{% endif %}>
+                  <label for="edition_none">None</label>
+              </div>
+              <!-- Other editions -->
+              {% for edition in available_editions %}
+              <div>
+                  <input type="checkbox" id="edition_{{ forloop.counter }}" name="editions" value="{{ edition.id }}"
+                         {% if edition in pre_selected_editions %}checked{% endif %}>
+                  <label for="edition_{{ forloop.counter }}">{{ edition.name }}</label>
+              </div>
+              {% endfor %}
           </div>
           {% if form.editions.errors %}
           <small class="error-message">{{ form.editions.errors|join:", " }}</small>
           {% endif %}
         </div>
+      
+      <!-- Versions Section -->
+      <div class="col-md-12 form-group">
+        <div class="section-header">
+            <h6>Software Versions</h6>
+            <input type="text" id="version-search" class="search-box" placeholder="Search versions...">
+        </div>
+        <div class="checkbox-group" id="version-checkbox-group">
 
-        <div class="col-md-12 form-group">
-          <label for="versions">Software Versions<span class="text-danger">*</span></label>
-          <div class="input-group-icon checkbox-group">
-            {% for version in available_versions %}
-            <div>
-              <input type="checkbox" id="version_{{ forloop.counter }}" name="versions" value="{{ version.id }}" {% if version in form.instance.versions.all %}checked{% endif %}>
-              <label for="version_{{ forloop.counter }}">{{ version.name }}</label>
-            </div>
-            {% endfor %}
+              <!-- Disabled "None" checkbox -->
+              <div>
+                  <input type="checkbox" id="version_none" name="versions" value="none" disabled {% if not pre_selected_versions %}checked{% endif %}>
+                  <label for="version_none">None</label>
+              </div>
+              <!-- Other versions -->
+              {% for version in available_versions %}
+              <div>
+                  <input type="checkbox" id="version_{{ forloop.counter }}" name="versions" value="{{ version.id }}"
+                         {% if version in pre_selected_versions %}checked{% endif %}>
+                  <label for="version_{{ forloop.counter }}">{{ version.name }}</label>
+              </div>
+              {% endfor %}
           </div>
           {% if form.versions.errors %}
           <small class="error-message">{{ form.versions.errors|join:", " }}</small>
           {% endif %}
         </div>
-
-        <div class="col-md-12 form-group">
-          <label for="addons">Software Addons<span class="text-danger">*</span></label>
-          <div class="input-group-icon checkbox-group">
-            {% for addon in available_addons %}
-            <div>
-              <input type="checkbox" id="addon_{{ forloop.counter }}" name="addons" value="{{ addon.id }}" {% if addon in form.instance.addons.all %}checked{% endif %}>
-              <label for="addon_{{ forloop.counter }}">{{ addon.name }}</label>
+      
+          <!-- Addons Section -->
+          <div class="col-md-12 form-group">
+            <div class="section-header">
+                <h6>Software Addons</h6>
+                <input type="text" id="addon-search" class="search-box" placeholder="Search addons...">
             </div>
-            {% endfor %}
+            <div class="checkbox-group" id="addon-checkbox-group">
+              <!-- Disabled "None" checkbox -->
+              <div>
+                  <input type="checkbox" id="addon_none" name="addons" value="none" disabled {% if not pre_selected_addons %}checked{% endif %}>
+                  <label for="addon_none">None</label>
+              </div>
+              <!-- Other addons -->
+              {% for addon in available_addons %}
+              <div>
+                  <input type="checkbox" id="addon_{{ forloop.counter }}" name="addons" value="{{ addon.id }}"
+                         {% if addon in pre_selected_addons %}checked{% endif %}>
+                  <label for="addon_{{ forloop.counter }}">{{ addon.name }}</label>
+              </div>
+              {% endfor %}
           </div>
           {% if form.addons.errors %}
           <small class="error-message">{{ form.addons.errors|join:", " }}</small>
@@ -140,4 +287,33 @@
     </form>
   </div>
 </section>
-{% endblock %}
+<script>
+  // Function to filter checkboxes based on search input
+  function filterCheckboxes(searchInputId, checkboxGroupId) {
+  const searchInput = document.getElementById(searchInputId);
+  const checkboxGroup = document.getElementById(checkboxGroupId);
+  
+  searchInput.addEventListener('input', function () {
+      const searchTerm = searchInput.value.toLowerCase();
+      const checkboxes = checkboxGroup.querySelectorAll('div');
+  
+      checkboxes.forEach(function (checkbox) {
+          const label = checkbox.querySelector('label');
+          if (label) {
+              const text = label.textContent.toLowerCase();
+              if (text.includes(searchTerm)) {
+                  checkbox.style.display = 'block';
+              } else {
+                  checkbox.style.display = 'none';
+              }
+          }
+      });
+  });
+  }
+  
+  // Apply search functionality to editions, versions, and addons
+  filterCheckboxes('edition-search', 'edition-checkbox-group');
+  filterCheckboxes('version-search', 'version-checkbox-group');
+  filterCheckboxes('addon-search', 'addon-checkbox-group');
+  </script>
+  {% endblock %}
